@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.noydb.damap</groupId>
+    <artifactId>damapper</artifactId>
+    <name>damapper</name>
+    <version>0.0.0</version>
+    <description>app for mapping classes through method annotations</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>processor</module>
+        <module>runner</module>
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-compiler-plugin</artifactId>-->
+            <!--                <version>3.8.1</version>-->
+            <!--                <configuration>-->
+            <!--                    <source>${java.version}</source>-->
+            <!--                    <target>${java.version}</target>-->
+
+            <!--                    <compilerArgs>-->
+            <!--                        &lt;!&ndash;                        <arg>-proc:none</arg>&ndash;&gt;-->
+            <!--                        &lt;!&ndash;                        <arg>-XprintProcessorInfo</arg>&ndash;&gt;-->
+            <!--                    </compilerArgs>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
+        </plugins>
+    </build>
+
+</project>
