@@ -23,8 +23,7 @@ import java.util.Set;
 @SupportedAnnotationTypes("com.noydb.duhmap.annotation.DuhMap")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public final class DuhMapAnnotationProcessor extends AbstractProcessor {
-
-
+    
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         ProcessorUtils.performValidations(roundEnv, processingEnv);
 
@@ -59,8 +58,8 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
     private void mapMethod(final StringBuilder builder, final Element method, final Element interfaceEl) {
         final var methodEx = ((ExecutableElement) method);
-        final var returnTypeElement = (TypeElement) processingEnv.getTypeUtils().asElement(methodEx.getReturnType());
-        final var sourceClassEl = (TypeElement) processingEnv.getTypeUtils().asElement(methodEx.getParameters().get(0).asType());
+        final var returnTypeElement = ProcessorUtils.asTypeElement(processingEnv, methodEx.getReturnType());
+        final var sourceClassEl = ProcessorUtils.asTypeElement(processingEnv, methodEx.getParameters().get(0).asType());
 
         builder.append(
                 String.format(
@@ -97,7 +96,11 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         final var ignoreFields = duhMapAnnotation != null ? duhMapAnnotation.ignoredFields() : new String[]{};
 
         for (final Element field : paramElement.getEnclosedElements()) {
-            if (!field.getKind().isField() || Arrays.stream(ignoreFields).anyMatch(ignoredField -> ignoredField.equals(field.getSimpleName().toString()))) {
+            final var excludeField = Arrays
+                    .stream(ignoreFields)
+                    .anyMatch(ignoredField -> ignoredField.equals(field.getSimpleName().toString()));
+
+            if (!field.getKind().isField() || excludeField) {
                 continue;
             }
 

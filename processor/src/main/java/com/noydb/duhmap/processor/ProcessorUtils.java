@@ -12,6 +12,7 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,13 +25,13 @@ public final class ProcessorUtils {
     // 2 = class name
     // 3 = original annotated interface
     public static final String CLASS_TEMPLATE = """
-                package %s;
+            package %s;
 
-                import javax.annotation.processing.Generated;
-                            
-                %spublic final class %s implements %s {
+            import javax.annotation.processing.Generated;
+                        
+            %spublic final class %s implements %s {
 
-                """;
+            """;
 
     // 0 = return type class
     // 1 = method name
@@ -114,4 +115,7 @@ public final class ProcessorUtils {
         throw new DuhMapProcessorException("DuhMap failed to determine the package");
     }
 
+    public static TypeElement asTypeElement(final ProcessingEnvironment processingEnv, final TypeMirror tm) {
+        return (TypeElement) processingEnv.getTypeUtils().asElement(tm);
+    }
 }
