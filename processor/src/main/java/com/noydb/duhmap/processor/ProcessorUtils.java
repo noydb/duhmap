@@ -42,8 +42,6 @@ public final class ProcessorUtils {
     // 1 = (capitalized) field name
     public static final String SET_TEMPLATE = "        target.set%s(source.get%s());";
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     private ProcessorUtils() {
         // do not instantiate
     }
@@ -100,7 +98,7 @@ public final class ProcessorUtils {
 
         return String.format(
                 template,
-                LocalDateTime.now().format(FORMATTER),
+                LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
                 Runtime.version()
         );
     }

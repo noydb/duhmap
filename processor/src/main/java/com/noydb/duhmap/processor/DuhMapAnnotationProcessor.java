@@ -23,7 +23,7 @@ import java.util.Set;
 @SupportedAnnotationTypes("com.noydb.duhmap.annotation.DuhMap")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public final class DuhMapAnnotationProcessor extends AbstractProcessor {
-    
+
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         ProcessorUtils.performValidations(roundEnv, processingEnv);
 
