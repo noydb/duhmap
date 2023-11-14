@@ -2,7 +2,7 @@ package com.noydb.duhmap.runner;
 
 public class LittleTest {
 
-//    private static final DuhStudentMapper mapper = new com.noydb.duhmap.runner.DuhStudentMapper();
+//    private static final DuhStudentMapper mapper = new DuhStudentMapper();
 
     public static void main(String[] args) {
         Student student = new Student("Jim", "Jones", 12);

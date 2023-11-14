@@ -12,3 +12,19 @@ To implement operations based on the class of an Element object, either use a vi
 // add a failStrict attribute to annotation. if unrecognized ignore fields, or classes don't have identical fields, etc. 
 
 add null checks. make configurable? 
+
+
+https://github.com/mapstruct/mapstruct/blob/main/processor/src/main/java/org/mapstruct/ap/MappingProcessor.java
+https://github.com/mapstruct/mapstruct/blob/main/processor/src/main/java/org/mapstruct/ap/internal/processor/SpringComponentProcessor.java
+
+
+
+<!-- Needed because the java files are on the compiler classpath -->
+                            <!-- See: https://jira.codehaus.org/browse/MCOMPILER-97 -->
+
+
+
+If you control the source code I also recommend to package the processor in the same artifact as the annotations. Like this, whenever you're using one of the annotations, the annotation processor is also picked-up by the compiler.
+
+
+https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml

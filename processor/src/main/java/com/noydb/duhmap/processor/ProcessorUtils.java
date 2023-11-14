@@ -99,7 +99,7 @@ public final class ProcessorUtils {
         return String.format(
                 template,
                 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-                Runtime.version()
+                System.getProperty("java.version")
         );
     }
 
