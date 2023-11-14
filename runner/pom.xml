@@ -4,27 +4,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.noydb.damap</groupId>
-        <artifactId>damapper</artifactId>
+        <groupId>com.noydb.duhmap</groupId>
+        <artifactId>duhmapper</artifactId>
         <version>0.0.0</version>
     </parent>
 
     <artifactId>runner</artifactId>
 
     <properties>
-        <maven.compiler.source>18</maven.compiler.source>
-        <maven.compiler.target>18</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
+
     <dependencies>
         <dependency>
-            <groupId>com.noydb.libs</groupId>
-            <artifactId>core</artifactId>
-            <version>0.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.noydb.libs</groupId>
+            <groupId>com.noydb.duhmap</groupId>
             <artifactId>processor</artifactId>
             <version>0.0.0</version>
             <scope>compile</scope>

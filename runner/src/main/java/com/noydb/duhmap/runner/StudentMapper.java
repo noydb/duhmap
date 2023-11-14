@@ -1,6 +1,6 @@
-package com.noydb.damap.runner;
+package com.noydb.duhmap.runner;
 
-import com.noydb.damap.annotation.DuhMap;
+import com.noydb.duhmap.annotation.DuhMap;
 
 @DuhMap
 public interface StudentMapper {

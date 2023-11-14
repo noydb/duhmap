@@ -1,16 +1,10 @@
-package com.noydb.damap.runner;
+package com.noydb.duhmap.runner;
 
-public class Student {
+public class StudentDTO {
 
     private String firstName;
     private String lastName;
     private int age;
-
-    public Student(String firstName, String lastName, int age) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-    }
 
     public String getFirstName() {
         return firstName;
@@ -36,4 +30,12 @@ public class Student {
         this.age = age;
     }
 
+    @Override
+    public String toString() {
+        return "StudentDTO{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", age=" + age +
+                '}';
+    }
 }

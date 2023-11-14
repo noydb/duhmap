@@ -3,9 +3,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.noydb.damap</groupId>
-    <artifactId>damapper</artifactId>
-    <name>damapper</name>
+    <groupId>com.noydb.duhmap</groupId>
+    <artifactId>duhmapper</artifactId>
+    <name>duhmapper</name>
     <version>0.0.0</version>
     <description>app for mapping classes through method annotations</description>
     <packaging>pom</packaging>
@@ -19,25 +19,5 @@
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <build>
-        <plugins>
-
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-compiler-plugin</artifactId>-->
-            <!--                <version>3.8.1</version>-->
-            <!--                <configuration>-->
-            <!--                    <source>${java.version}</source>-->
-            <!--                    <target>${java.version}</target>-->
-
-            <!--                    <compilerArgs>-->
-            <!--                        &lt;!&ndash;                        <arg>-proc:none</arg>&ndash;&gt;-->
-            <!--                        &lt;!&ndash;                        <arg>-XprintProcessorInfo</arg>&ndash;&gt;-->
-            <!--                    </compilerArgs>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
-        </plugins>
-    </build>
 
 </project>
