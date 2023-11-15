@@ -1,6 +1,7 @@
 package com.noydb.duhmap.processor;
 
 import com.noydb.duhmap.annotation.DuhMap;
+import com.noydb.duhmap.annotation.DuhMapMethod;
 import com.noydb.duhmap.error.DuhMapProcessorException;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -52,7 +53,6 @@ public final class ProcessorUtils {
     public static void performValidations(final RoundEnvironment roundEnv,
                                           final ProcessingEnvironment processingEnv) {
         for (Element element : roundEnv.getElementsAnnotatedWith(DuhMap.class)) {
-            // Validate that interfaces are the top-level elements
             if (element.getKind() != ElementKind.INTERFACE) {
                 throw new DuhMapProcessorException("You may only use DuhMap annotation with an interface");
             }
@@ -73,7 +73,7 @@ public final class ProcessorUtils {
                 final var parameterType = param.asType();
                 final Types types = processingEnv.getTypeUtils();
 
-                // Validate that the parameter is a class
+                // declared is interface or class
                 if (parameterType.getKind() != TypeKind.DECLARED) {
                     throw new DuhMapProcessorException("You can only map classes (to classes) in DuhMap");
                 }
@@ -84,6 +84,30 @@ public final class ProcessorUtils {
             }
 
             // TODO: Validate the classes have equal methods or not
+        }
+
+        validateMethodAnnotations(roundEnv);
+    }
+
+    private static void validateMethodAnnotations(final RoundEnvironment roundEnv) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(DuhMapMethod.class)) {
+            if (element.getKind() != ElementKind.METHOD) {
+                throw new DuhMapProcessorException("You may only use DuhMapMethod annotation with a method");
+            }
+
+            final var enclosingEl = element.getEnclosingElement();
+            if (!enclosingEl.getKind().equals(ElementKind.INTERFACE)) {
+                throw new DuhMapProcessorException(
+                        "You may only use a DuhMapMethod annotation inside an interface annotated with @DuhMap"
+                );
+            }
+
+            final DuhMap interfaceAnnotation = enclosingEl.getAnnotation(DuhMap.class);
+            if (interfaceAnnotation == null) {
+                throw new DuhMapProcessorException(
+                        "You must annotate your interface "+ getName(enclosingEl) + " with @DuhMap in order to use @DuhMapMethod"
+                );
+            }
         }
     }
 
@@ -103,8 +127,8 @@ public final class ProcessorUtils {
         );
     }
 
-    public static String getPackageName(final TypeElement interfaceEl) {
-        final var enclosingElement = interfaceEl.getEnclosingElement();
+    public static String getPackageName(final TypeElement interfaceOrClassEl) {
+        final var enclosingElement = interfaceOrClassEl.getEnclosingElement();
 
         if (enclosingElement instanceof PackageElement packageElement) {
             return packageElement.getQualifiedName().toString();
@@ -115,5 +139,9 @@ public final class ProcessorUtils {
 
     public static TypeElement asTypeElement(final ProcessingEnvironment processingEnv, final TypeMirror tm) {
         return (TypeElement) processingEnv.getTypeUtils().asElement(tm);
+    }
+
+    public static String getName(final Element element) {
+        return element.getSimpleName().toString();
     }
 }

@@ -28,3 +28,7 @@ If you control the source code I also recommend to package the processor in the 
 
 
 https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml
+
+
+
+build @DuhDTO? 

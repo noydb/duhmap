@@ -9,11 +9,11 @@ import java.lang.annotation.Target;
 // at source processing. So not available
 // at runtime
 @Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.TYPE) // can only be
+@Target(ElementType.METHOD) // can only be
 // used on a class, interface, enum, or
 // record
-public @interface DuhMap {
+public @interface DuhMapMethod {
 
-    String[] ignoredMethods() default "";
+    String[] ignoredFields() default "";
 
 }
