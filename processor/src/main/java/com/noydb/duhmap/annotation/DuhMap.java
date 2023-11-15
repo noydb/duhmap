@@ -5,6 +5,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * To be used at the interface level to
+ * tell DuhMap to generate a concrete
+ * implementation, mapping all applicable
+ * methods.
+ *
+ * @author bpower
+ */
 // marks  the annotation as only available
 // at source processing. So not available
 // at runtime
@@ -16,4 +24,12 @@ public @interface DuhMap {
 
     String[] ignoredMethods() default "";
 
+    /**
+     * If enabled, the source and target
+     * classes must possess identical
+     * (determined by type & name) fields.
+     * Ignored fields also have to be defined
+     * in the source and target classes.
+     */
+    boolean strictChecks() default false;
 }

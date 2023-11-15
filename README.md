@@ -32,3 +32,9 @@ https://github.com/pellaton/spring-configuration-validation-processor/blob/maste
 
 
 build @DuhDTO? 
+
+log full package names in exceptions for better error tracing
+
+test what happens if you have a field on one class but it's not on the other
+
+TODO: validate fields by name AND type in strictChecks validator. 

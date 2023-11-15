@@ -2,7 +2,7 @@ package com.noydb.duhmap.processor;
 
 import com.noydb.duhmap.annotation.DuhMap;
 import com.noydb.duhmap.annotation.DuhMapMethod;
-import com.noydb.duhmap.error.DuhMapProcessorException;
+import com.noydb.duhmap.error.DuhMapException;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -30,8 +30,11 @@ import static com.noydb.duhmap.processor.ProcessorUtils.getName;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
-    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-        ProcessorUtils.performValidations(roundEnv, processingEnv);
+    public boolean process(
+            final Set<? extends TypeElement> annotations,
+            final RoundEnvironment roundEnv
+    ) {
+        DuhMapAnnotationValidator.performValidations(roundEnv, processingEnv);
 
         for (final Element el : roundEnv.getElementsAnnotatedWith(DuhMap.class)) {
             final var interfaceEl = (TypeElement) el;
@@ -50,8 +53,10 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
                     )
             );
 
+            final DuhMap ann = interfaceEl.getAnnotation(DuhMap.class);
+            final var ignoredMethods = Arrays.asList(ann.ignoredMethods());
             for (final var method : interfaceEl.getEnclosedElements()) {
-                mapMethod(builder, method, interfaceEl);
+                mapMethod(builder, method, ignoredMethods);
             }
 
             builder.append("}");
@@ -62,7 +67,11 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         return true;
     }
 
-    private void mapMethod(final StringBuilder builder, final Element methodEl, final Element interfaceEl) {
+    private void mapMethod(
+            final StringBuilder builder,
+            final Element methodEl,
+            final List<String> ignoredMethods
+    ) {
         final var methodExEl = ((ExecutableElement) methodEl);
         final var methodName = getName(methodEl);
         final var returnTypeEl = asTypeElement(processingEnv, methodExEl.getReturnType());
@@ -75,9 +84,8 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
                         getName(sourceClassEl)
                 )
         );
-
-        final DuhMap ann = interfaceEl.getAnnotation(DuhMap.class);
-        if (Arrays.asList(ann.ignoredMethods()).contains(methodName)) {
+        final var methodAnnotation = methodEl.getAnnotation(DuhMapMethod.class);
+        if (ignoredMethods.contains(methodName) || methodAnnotation != null && methodAnnotation.ignore()) {
             builder.append(" return null; }\n");
             return;
         }
@@ -94,16 +102,13 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         // there is only one parameter
         final var paramTypeMirror = methodExEl.getParameters().get(0).asType();
 
-        final var methodAnnotation = methodEl.getAnnotation(DuhMapMethod.class);
         List<String> ignoredFields = new ArrayList<>();
         if (methodAnnotation != null) {
             ignoredFields = Arrays.asList(methodAnnotation.ignoredFields());
         }
-        System.out.println(ignoredFields);
-        // we know it's a class (DeclaredType.
-        // we validated it already) so cast
         mapFields(
                 builder,
+                // we've validated it's a class (DeclaredType)
                 ((DeclaredType) paramTypeMirror).asElement(),
                 ignoredFields
         );
@@ -135,13 +140,13 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         try {
             fileObject = filer.createResource(StandardLocation.SOURCE_OUTPUT, packageName, className + ".java");
         } catch (final IOException e) {
-            throw new DuhMapProcessorException(e);
+            throw new DuhMapException(e);
         }
 
         try (final Writer writer = fileObject.openWriter()) {
             writer.write(content);
         } catch (final IOException e) {
-            throw new DuhMapProcessorException(e);
+            throw new DuhMapException(e);
         }
     }
 }

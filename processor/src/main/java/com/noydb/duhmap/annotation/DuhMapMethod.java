@@ -14,6 +14,8 @@ import java.lang.annotation.Target;
 // record
 public @interface DuhMapMethod {
 
-    String[] ignoredFields() default "";
+    String[] ignoredFields() default {};
+
+    boolean ignore() default false;
 
 }
