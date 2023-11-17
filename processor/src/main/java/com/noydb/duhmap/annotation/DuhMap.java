@@ -32,4 +32,6 @@ public @interface DuhMap {
      * in the source and target classes.
      */
     boolean strictChecks() default false;
+
+    DuhMapBeanType beanType() default DuhMapBeanType.DEFAULT;
 }

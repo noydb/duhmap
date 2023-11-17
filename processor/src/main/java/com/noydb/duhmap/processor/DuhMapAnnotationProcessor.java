@@ -3,6 +3,9 @@ package com.noydb.duhmap.processor;
 import com.noydb.duhmap.annotation.DuhMap;
 import com.noydb.duhmap.annotation.DuhMapMethod;
 import com.noydb.duhmap.error.DuhMapException;
+import com.noydb.duhmap.kit.DuhMapAnnotationValidator;
+import com.noydb.duhmap.kit.DuhMapTemplates;
+import com.noydb.duhmap.kit.ProcessorUtils;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -23,8 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static com.noydb.duhmap.processor.ProcessorUtils.asTypeElement;
-import static com.noydb.duhmap.processor.ProcessorUtils.getName;
+import static com.noydb.duhmap.kit.DuhMapTemplates.getTemplate;
+import static com.noydb.duhmap.kit.ProcessorUtils.asTypeElement;
+import static com.noydb.duhmap.kit.ProcessorUtils.getName;
 
 @SupportedAnnotationTypes("com.noydb.duhmap.annotation.DuhMap")
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
@@ -38,6 +42,7 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
         for (final Element el : roundEnv.getElementsAnnotatedWith(DuhMap.class)) {
             final var interfaceEl = (TypeElement) el;
+            final var annotation = interfaceEl.getAnnotation(DuhMap.class);
             final var name = getName(interfaceEl);
             final var packageName = ProcessorUtils.getPackageName(interfaceEl);
             final var outputClassName = "Duh" + name;
@@ -45,9 +50,9 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
             final var builder = new StringBuilder();
             builder.append(
                     String.format(
-                            ProcessorUtils.CLASS_TEMPLATE,
+                            getTemplate(annotation),
                             packageName,
-                            ProcessorUtils.getGeneratedAnnotation(),
+                            DuhMapTemplates.getGeneratedAnnotation(),
                             outputClassName,
                             name
                     )
@@ -78,15 +83,17 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         final var sourceClassEl = asTypeElement(processingEnv, methodExEl.getParameters().get(0).asType());
         builder.append(
                 String.format(
-                        ProcessorUtils.METHOD_TEMPLATE,
-                        getName(returnTypeEl),
+                        DuhMapTemplates.METHOD_SIGNATURE,
+                        // we use fully qualified names so we don't
+                        // have to worry about importing
+                        returnTypeEl.getEnclosingElement().toString() + "." + getName(returnTypeEl),
                         methodName,
-                        getName(sourceClassEl)
+                        sourceClassEl.getEnclosingElement().toString() + "." + getName(sourceClassEl)
                 )
         );
         final var methodAnnotation = methodEl.getAnnotation(DuhMapMethod.class);
         if (ignoredMethods.contains(methodName) || methodAnnotation != null && methodAnnotation.ignore()) {
-            builder.append(" return null; }\n");
+            builder.append("         return null; \n    }\n");
             return;
         }
 
@@ -122,13 +129,12 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
     private void mapFields(final StringBuilder builder, final Element paramEl, final List<String> ignoredFields) {
         for (final Element field : paramEl.getEnclosedElements()) {
             final var fieldName = getName(field);
-            System.out.println(fieldName);
             if (!field.getKind().isField() || ignoredFields.contains(fieldName)) {
                 continue;
             }
 
             final var fieldNameUppercase = Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-            builder.append(String.format(ProcessorUtils.SET_TEMPLATE, fieldNameUppercase, fieldNameUppercase));
+            builder.append(String.format(DuhMapTemplates.SET_METHOD, fieldNameUppercase, fieldNameUppercase));
             builder.append("\n");
         }
     }

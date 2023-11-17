@@ -10,12 +10,15 @@
     </parent>
 
     <artifactId>processor</artifactId>
+    <version>0.5.0</version>
+    <description>The core engine that converts annotated interfaces into configurable mapper classes</description>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+<!--                TODO <version>3.8.1</version>-->
                 <executions>
                     <execution>
                         <id>default-compile</id>
@@ -28,9 +31,40 @@
                 </executions>
             </plugin>
 
-<!--            <plugin>-->
+<!--            TODO <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-source-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>attach-sources</id>-->
+<!--                        <phase>verify</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
+<!--           TODO <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <archive>-->
+<!--                        <manifest>-->
+<!--                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
+<!--                        </manifest>-->
+<!--                        <manifestEntries>-->
+<!--                            <Automatic-Module-Name>com.noydb.duhmap.processor</Automatic-Module-Name>-->
+<!--                            <Spring-Boot-Jar-Type>annotation-processor</Spring-Boot-Jar-Type>-->
+<!--                        </manifestEntries>-->
+<!--                    </archive>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+
+<!--           TODO <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-source-plugin</artifactId>-->
+<!--                <version>3.0.0</version>-->
 <!--                <executions>-->
 <!--                    <execution>-->
 <!--                        <id>attach-sources</id>-->
