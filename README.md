@@ -18,7 +18,7 @@ A simple, opinionated, dependency-free, Java library for generating configurable
 
 ### TODOs: 
 - log mismatching fields (when non strict) and log basically "mapped what was possible" 
-- test what happens if you have a field on one class but it's not on the other
+  - test what happens if you have a field on one class but it's not on the other
 - disable/handle enums & lists when they are fields on source & target? & other types.....?
 - maybe allow mapAll with spring bean, by adding list to interface and using mapAll with it. explain in readme
 
