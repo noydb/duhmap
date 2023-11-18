@@ -96,7 +96,7 @@ public final class DuhMapTemplates {
     public static final String MAP_ALL_METHOD_SIGNATURE = """
                     public java.util.List<%s> %s(final java.util.List<%s> sources) {
                         final java.util.List<%s> targets = new java.util.ArrayList<>();
-                        for (final %s source: sources) {
+                        for (final %s source : sources) {
                             targets.add(%s(source));
                         }
                     
