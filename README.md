@@ -7,13 +7,14 @@ A simple, opinionated, dependency-free Java mapper class generator. Uses an anno
 - `strictChecks`
 - `ignoredMethods`
 - `beanType`
-- 
+- TODO: `ignoredStrictChecks`
 
 #### Method Configurations
 - `ignore`
 - `ignoreFields`
 - `nullSafe`
 - `mapList`
+- TODO `implicitCast`
 
 ---
 
@@ -21,15 +22,14 @@ A simple, opinionated, dependency-free Java mapper class generator. Uses an anno
 - test what happens if you have a field on one class but it's not on the other
 - disable/handle enums & lists when they are fields on source & target? & other types.....?
 - maybe allow mapAll with spring bean, by adding list to interface and using mapAll with it. explain in readme
-- 
+
 ---
 
 ### 2.0
 - static method template.
-- Ability to reference one generated mapper from another generated mapper
+- Ability to reference one generated mapper from another generated mapper (ideally "smartly" detect if a mapper exists for a class, use it, else throw. compilation order is important or maybe not?)
 - Add implicitClass (default true) to interface and method annotations. if strictChecks=true, implicitCast cannot be true
 - build @DuhDTO
-- fFormating: no whitespace, "minify" the output.
 - add ability to disable any one of the strict rules
 
 ---
