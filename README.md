@@ -91,13 +91,13 @@ Disable compilation failure by specifiying any combination of the string values 
 - `mismatchingFields`
 - `ignoredMethods`
 - `implicitCasting`
+- `implicitCasting`: By default, the processor will [widen](https://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html#jls-5.1.2) source variables, if the target field type permits doing so. 
 
 #### `strictChecks`
 
 Throw compilation errors if any of the criteria listed below are not met:
   - Specified ignored fields do not exist on the source and target.
   - The source and target classes do not possess identical fields. Equality is determined by number of fields, names, and types.
-  - `implicitCasting` must be disabled (set to false)
 
 ---
 
@@ -111,15 +111,7 @@ Note: for `SPRING` & `DEFAULT` bean types, the method will be implemented but im
 
 #### `ignoredFields`
 
-Instruct the processor to not map the specified fields contained within the source (and target) class during generation
-
-#### `implicitCast` TODO
-
-Automatically widen/promote a value for a source field, if the target field type permits doing so.
-
-**Cheat Sheet**: `byte` -> `short` -> `char` -> `int` -> `long` -> `float` -> `double`
-
-**Note**: you cannot use this annotation when `strictChecks=true`
+Instruct the processor not to map the specified fields contained within the source (and target) class during generation.
 
 #### `mapList`
 
