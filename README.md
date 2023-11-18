@@ -1,13 +1,11 @@
 # DuhMap
-
-A simple, opinionated, dependency-free Java mapper class generator. Uses an annotation processor to analyze applicable interfaces
- and generate mapping methods (by writing java source files during compilation). 
+A simple, opinionated, dependency-free, Java library for generating configurable mapper classes. This library uses an annotation processor to analyze applicable interfaces and generate mapping methods (by generating & writing java source files during the compilation phase).
 
 #### Interface Configurations
 - `strictChecks`
 - `ignoredMethods`
 - `beanType`
-- TODO: `ignoredStrictChecks`
+- TODO `ignoredStrictChecks`
 
 #### Method Configurations
 - `ignore`
@@ -19,6 +17,7 @@ A simple, opinionated, dependency-free Java mapper class generator. Uses an anno
 ---
 
 ### TODOs: 
+- log mismatching fields (when non strict) and log basically "mapped what was possible). 
 - test what happens if you have a field on one class but it's not on the other
 - disable/handle enums & lists when they are fields on source & target? & other types.....?
 - maybe allow mapAll with spring bean, by adding list to interface and using mapAll with it. explain in readme
