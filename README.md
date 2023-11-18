@@ -2,7 +2,7 @@
 
 ### One Liner Mapper Method Generation
 
-A simple, opinionated, dependency-free, Java library for generating configurable mapper classes. This library uses an
+A simple, opinionated, dependency-free Java library for generating configurable mapper classes. This library uses an
 annotation processor to analyze applicable interfaces and generate mapping methods. This is done by constructing &
 writing java source files - to the `generated-sources` directory - during the compilation phase.
 
