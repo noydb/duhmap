@@ -30,7 +30,10 @@ public interface StudentMapper {
 }
 ```
 
-### Done
+### 3.
+`mvn clean install`
+
+### Done.
 ```Java
 package ...;
 
