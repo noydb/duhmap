@@ -2,11 +2,16 @@ package com.noydb.duhmap.kit;
 
 import com.noydb.duhmap.error.DuhMapException;
 
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,5 +56,41 @@ public final class DuhMapProcessorUtils {
                 element.getEnclosingElement().toString(),
                 element.getSimpleName().toString()
         );
+    }
+
+    public static void writeToFile(
+            final ProcessingEnvironment processingEnv,
+            final String packageName,
+            final String className,
+            final String content
+    ) {
+        final Filer filer = processingEnv.getFiler();
+        final FileObject fileObject;
+
+        try {
+            fileObject = filer.createResource(StandardLocation.SOURCE_OUTPUT, packageName, className + ".java");
+        } catch (final IOException e) {
+            throw new DuhMapException(
+                    String.format(
+                            "Error during writing of DuhMap file to source output for class: %s.%s",
+                            packageName,
+                            className
+                    ),
+                    e
+            );
+        }
+
+        try (final Writer writer = fileObject.openWriter()) {
+            writer.write(content);
+        } catch (final IOException e) {
+            throw new DuhMapException(
+                    String.format(
+                            "Error during writing of DuhMap file to source output for class: %s.%s",
+                            packageName,
+                            className
+                    ),
+                    e
+            );
+        }
     }
 }
