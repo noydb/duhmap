@@ -16,7 +16,7 @@ A simple, opinionated, dependency-free, Java library for generating configurable
 
 ### Step Two
 ```Java
-package com.noydb.duhmap.runner;
+package ...;
 
 import com.noydb.duhmap.annotation.DuhMap;
 import com.noydb.duhmap.annotation.DuhMapMethod;
@@ -32,7 +32,7 @@ public interface StudentMapper {
 
 ### Result
 ```Java
-package com.noydb.duhmap.runner;
+package ...;
 
 import javax.annotation.processing.Generated;
 
@@ -68,42 +68,71 @@ public final class DuhStudentMapper implements StudentMapper {
 ---
 
 ## `@DuhMap` Configurations
-- `strictChecks`: throw compilation errors if certain pre-defined rules fail during generation. Rules:
-  - if specified ignored fields do not exist on the source and target, fail.
-  - if the source and target classes do not possess identical fields. Equality is determined by number of fields, names, and types.
+
+#### `beanType`
+Configure the type of java bean to generate.
+
+- `DEFAULT`: concrete final class implementing the annotated interface's methods
+- `SPRING`: Spring Framework based bean, configured through use of `@Component` making the annotated interface available for dependency injection in Spring applications 
+- `STATIC`: un-instantiable final class implementing the interface methods as public static methods
+
+#### TODO `ignoredMethods`
+Instruct the processor not to map the specified methods during generation. 
+
+Note: for `SPRING` & `DEFAULT` bean types, the method will be implemented but immediately return null.
+
+#### TODO `ignoredStrictChecks`
+Disable compilation failure by specifiying any combination of the string values below (when `strictChecks=true`)
+
+- `ignoreFields`
+- `mismatchingFields`
+- `ignoredMethods`
+- `implicitCasting`
+
+#### `strictChecks`
+
+Throw compilation errors if any of the criteria listed below are not met:
+  - Specified ignored fields do not exist on the source and target.
+  - The source and target classes do not possess identical fields. Equality is determined by number of fields, names, and types.
   - `implicitCasting` must be disabled (set to false)
-
-- `ignoredMethods`: tell DuhMap to skip any methods contained within the annotated interface  
-
-- `beanType`: configure the type of java bean to generate.
-  - `DEFAULT`: concrete final class implementing the annotated interface's methods
-  - `SPRING`: Spring Framework based bean, configured through use of `@Component` making the annotated interface available for dependency injection in Spring applications 
-  - `STATIC`: un-instantiable final class implementing the interface methods as public static methods
-
-- TODO `ignoredStrictChecks`: disable compilation failure for any combination of the rules run when `strictChecks=true`
 
 ---
 
 ## `@DuhMapMethod` Configurations 
-- `ignore`: tell DuhMap to not map the annotated method (it will return null for `SPRING` & `DEFAULT` bean types)
 
-- `ignoreFields`: tell DuhMap to skip any fields contained on the source (and target) class during generation
+#### `ignore`
 
-- `nullSafe`: generate null checks inside all generated mapper methods (the source class is checked for null)
+Instruct the processor not to map the annotated method during generation. 
 
-- `mapList`: generate a list implementation of the annotated method. It will replicate the original method, but the parameter & return type signatures will be type-safe `java.util.List` variables
-  - **Note**: with Spring beans, you can utilize this annotation by setting it to true _and_ defining the list method **in the annotated interface**. This is so that when you inject the bean - but do so referencing the interface - the generated list methods will be detected) 
+Note: for `SPRING` & `DEFAULT` bean types, the method will be implemented but immediately return null.   
 
-- TODO `implicitCast`: automatically widen/promote a value for a source field, if the target field type permits. (`byte` -> `short` -> `char` -> `int` -> `long` -> `float` -> `double`)
-  - **Note**: you cannot use this annotation when `strictChecks=true`
+#### `ignoredFields`
+
+Instruct the processor to not map the specified fields contained within the source (and target) class during generation
+
+#### TODO `implicitCast`
+
+Automatically widen/promote a value for a source field, if the target field type permits doing so.
+
+**Cheat Sheet**: `byte` -> `short` -> `char` -> `int` -> `long` -> `float` -> `double`
+
+**Note**: you cannot use this annotation when `strictChecks=true`
+
+#### `mapList`
+
+Generate a list implementation of the annotated method. It will replicate the original method, but the parameter & return type signatures will be type-safe `java.util.List` variables
+
+**Note**: for Spring beans, you can utilize this annotation by defining the list method - replicating the one DuhMap will generate - **in the annotated interface**. This is so that when you inject the bean - but do so referencing the interface - the generated list methods will be detected) 
+
+#### `nullSafe`
+Generate null checks inside all generated mapper methods (the source class will be checked for null)
 
 ---
 
 ## TODOs
 - test what happens if you have a field on one class but it's not on the other
 - disable/handle enums & lists when they are fields on source & target? & other types.....?
-- maybe allow mapAll with spring bean, by adding list to interface and using mapAll with it. explain in readme
-- validate ignoredMethods exist
+- validate ignoredMethods exist 
 
 ---
 
@@ -115,6 +144,8 @@ public final class DuhStudentMapper implements StudentMapper {
 - add ability to disable any one of the strict rules
 - Logging
 - Proper unit testing
+- ignored methods
+- ignoredStrictChecks
 
 ---
 
