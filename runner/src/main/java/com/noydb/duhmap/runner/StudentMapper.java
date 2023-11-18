@@ -3,14 +3,13 @@ package com.noydb.duhmap.runner;
 import com.noydb.duhmap.annotation.DuhMap;
 import com.noydb.duhmap.annotation.DuhMapMethod;
 
-@DuhMap()
+@DuhMap(strictChecks = true)
 public interface StudentMapper {
 
-    @DuhMapMethod(ignoredFields = {"age", "firstName1111"}, mapList = true)
+    @DuhMapMethod(ignoredFields = {"age"}, mapList = true)
     Student mapTo(StudentDTO dto);
 
-    @DuhMapMethod(mapList = true)
+    @DuhMapMethod(ignore = true)
     StudentDTO mapFrom(Student student);
 
-//    List<StudentDTO> mapFrom(final List<Student> sources);
 }
