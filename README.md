@@ -13,7 +13,6 @@ Configuration properties are available:
 
 ### TODOs: 
 - test what happens if you have a field on one class but it's not on the other
-- validate fields by name AND type in strictChecks validator.
 - sort maven plugin versioning
 - disable/handle enums & lists, & other types?.....
 

@@ -12,6 +12,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.asTypeElement;
@@ -53,8 +54,8 @@ public final class DuhMapAnnotationStrictValidator {
     }
 
     private static void validateFieldsMatch(
-            final List<String> paramClassFields,
-            final List<String> returnTypeClassFields,
+            final List<Element> paramClassFields,
+            final List<Element> returnTypeClassFields,
             final TypeElement paramEl,
             final TypeElement returnTypeEl
     ) {
@@ -73,19 +74,42 @@ public final class DuhMapAnnotationStrictValidator {
             );
         }
 
-        final var equalFields = returnTypeClassFields
+        final var sourceFieldsSorted = paramClassFields
                 .stream()
-                .sorted()
-                .toList()
-                .equals(paramClassFields.stream().sorted().toList());
-        if (!equalFields) {
-            throw new StrictDuhMapException(
-                    String.format(
-                            "There was a mismatch between the parameters of the classes: %s %s",
-                            returnTypeClassName,
-                            paramClassName
-                    )
-            );
+                .sorted(Comparator.comparing(e -> e.getSimpleName().toString()))
+                .toList();
+        final var returnFieldsSorted = returnTypeClassFields
+                .stream()
+                .sorted(Comparator.comparing(e -> e.getSimpleName().toString()))
+                .toList();
+
+        for (int i = 0; i < sourceFieldsSorted.size(); i++) {
+            final var sourceField = sourceFieldsSorted.get(i);
+            final var returnField = returnFieldsSorted.get(i);
+
+            if (!sourceField.getSimpleName().equals(returnField.getSimpleName())) {
+                throw new StrictDuhMapException(
+                        String.format(
+                                "There was a mismatch between the source and target fields: %s(%s) VS %s(%s)",
+                                paramClassName,
+                                sourceFieldsSorted,
+                                returnTypeClassName,
+                                returnFieldsSorted
+                        )
+                );
+            }
+
+            if (!sourceField.asType().equals(returnField.asType())) {
+                throw new StrictDuhMapException(
+                        String.format(
+                                "There was a type mismatch between the source and target fields: %s(%s) VS %s(%s)",
+                                paramClassName,
+                                sourceField.getSimpleName().toString(),
+                                returnTypeClassName,
+                                returnField.getSimpleName().toString()
+                        )
+                );
+            }
         }
     }
 
@@ -93,12 +117,17 @@ public final class DuhMapAnnotationStrictValidator {
     // as we've already validated both
     // classes have identical fields
     private static void validateIgnoredFieldsExist(
-            final List<String> paramClassFields,
+            final List<Element> paramClassFields,
             final DuhMapMethod annotation,
             final Element interfaceEl
     ) {
+        final var paramNames = paramClassFields
+                .stream()
+                .map(el -> el.getSimpleName().toString())
+                .toList();
+
         for (final var ignoredField : annotation.ignoredFields()) {
-            if (!paramClassFields.contains(ignoredField)) {
+            if (!paramNames.contains(ignoredField)) {
                 throw new StrictDuhMapException(
                         String.format(
                                 "For interface: %s the ignored field %s does not exist in the source and target classes",

@@ -34,11 +34,11 @@ public final class DuhMapProcessorUtils {
         return element.getSimpleName().toString();
     }
 
-    public static List<String> getFields(final Element classEl) {
-        final var sourceFields = new ArrayList<String>();
+    public static List<Element> getFields(final Element classEl) {
+        final var sourceFields = new ArrayList<Element>();
         for (final var field : classEl.getEnclosedElements()) {
             if (field.getKind().isField()) {
-                sourceFields.add(getName(field));
+                sourceFields.add(field);
             }
         }
 
