@@ -105,7 +105,7 @@ Instruct the processor not to map the specified methods during generation.
 
 #### `ignoredStrictChecks`
 
-Disable compilation failure by specifying any combination of the string values below (when `strictChecks=true`).
+Disable compilation failures by specifying any combination of the string values below (when `strictChecks=true`).
 
 - `ignoredFields`
 - `mismatchingFields`
@@ -116,7 +116,7 @@ Disable compilation failure by specifying any combination of the string values b
 
 #### `strictChecks`
 
-Throw compilation errors if any of the criteria listed below are not met:
+Throw compilation errors if any of the criterion listed below are not met:
 
 - Specified ignored fields do not exist on the source and target classes.
 - Specified ignored methods do not exist within the annotated interface.

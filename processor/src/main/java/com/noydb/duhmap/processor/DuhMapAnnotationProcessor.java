@@ -33,6 +33,7 @@ import static com.noydb.duhmap.kit.DuhMapTemplates.getTemplate;
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
+    @Override
     public boolean process(
             final Set<? extends TypeElement> annotations,
             final RoundEnvironment roundEnv
