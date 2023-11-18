@@ -79,12 +79,12 @@ Configure the type of java bean to generate.
 - `SPRING`: Spring Framework based bean, configured through use of `@Component` making the annotated interface available for dependency injection in Spring applications 
 - `STATIC`: un-instantiable final class implementing the interface methods as public static methods
 
-#### TODO `ignoredMethods`
+#### `ignoredMethods` TODO
 Instruct the processor not to map the specified methods during generation. 
 
 Note: for `SPRING` & `DEFAULT` bean types, the method will be implemented but immediately return null.
 
-#### TODO `ignoredStrictChecks`
+#### `ignoredStrictChecks` TODO
 Disable compilation failure by specifiying any combination of the string values below (when `strictChecks=true`)
 
 - `ignoreFields`
@@ -113,7 +113,7 @@ Note: for `SPRING` & `DEFAULT` bean types, the method will be implemented but im
 
 Instruct the processor to not map the specified fields contained within the source (and target) class during generation
 
-#### TODO `implicitCast`
+#### `implicitCast` TODO
 
 Automatically widen/promote a value for a source field, if the target field type permits doing so.
 
