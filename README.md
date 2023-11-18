@@ -38,9 +38,10 @@ public interface StudentMapper {
 
 ### 3.
 `mvn clean install`
+
 `gradle build`
 
-### Done.
+### Result:
 ```Java
 package ...;
 
