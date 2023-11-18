@@ -13,23 +13,24 @@ Configuration properties are available:
 
 ### TODOs: 
 - test what happens if you have a field on one class but it's not on the other
-- sort maven plugin versioning
-- disable/handle enums & lists, & other types?.....
-
+- disable/handle enums & lists when they are fields on source & target? & other types.....?
+- 
 ---
 
 ### 2.0
-- Ability to reference one generated mapper from another generated mapper
-- build @DuhDTO
-- Map Lists/ArrayLists/Collections. Same logic, but just need for loop logic. could do mapAll on regular method, so it generates list impl, or choose collection type
-- Add implicitClass (default true) to interface and method annotations. if strictChecks=true, implicitCast cannot be true
-- fFormating: no whitespace, "minify" the output. 
 - static method template.
+- Map Lists/ArrayLists/Collections. Same logic, but just need for loop logic. could do mapAll on regular method, so it generates list impl, or choose collection type
+- Ability to reference one generated mapper from another generated mapper
+- Add implicitClass (default true) to interface and method annotations. if strictChecks=true, implicitCast cannot be true
+- build @DuhDTO
+- fFormating: no whitespace, "minify" the output.
 - add ability to disable any one of the strict rules
 
 ---
 
 ### Research, Useful Info, Etc.
+- sort maven plugin versioning
+- understand java versioning etc (`@SupportedSourceVersion(SourceVersion.RELEASE_8)`)
 - Represents a program element such as a module, package, class, or method. Each element represents a compile-time language-level construct (and not, for example, a runtime construct of the virtual machine).
   Elements should be compared using the equals(Object) method. There is no guarantee that any particular element will always be represented by the same object.
   To implement operations based on the class of an Element object, either use a visitor or use the result of the getKind method. Using instanceof is not necessarily a reliable idiom for determining the effective class of an object in this modeling hierarchy since an implementation may choose to have a single object implement multiple Element subinterfaces.

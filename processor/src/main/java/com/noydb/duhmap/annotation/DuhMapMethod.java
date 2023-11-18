@@ -9,9 +9,9 @@ import java.lang.annotation.Target;
 // at source processing. So not available
 // at runtime
 @Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.METHOD) // can only be
-// used on a class, interface, enum, or
-// record
+// can only be used on a class, interface,
+// enum, or record
+@Target(ElementType.METHOD)
 public @interface DuhMapMethod {
 
     String[] ignoredFields() default {};
@@ -19,5 +19,7 @@ public @interface DuhMapMethod {
     boolean ignore() default false;
 
     boolean nullSafe() default true;
+
+    boolean mapAll() default false;
 
 }
