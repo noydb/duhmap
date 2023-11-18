@@ -54,7 +54,7 @@ public final class DuhMapProcessorUtils {
         return String.format(
                 "%s.%s",
                 element.getEnclosingElement().toString(),
-                element.getSimpleName().toString()
+                getName(element)
         );
     }
 
