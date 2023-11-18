@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>processor</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
     <description>The core engine that converts annotated interfaces into configurable mapper classes</description>
 
     <build>
@@ -31,7 +31,7 @@
                 </executions>
             </plugin>
 
-<!--            TODO <plugin>-->
+<!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
 <!--                <artifactId>maven-source-plugin</artifactId>-->
 <!--                <executions>-->
@@ -61,20 +61,20 @@
 <!--                </configuration>-->
 <!--            </plugin>-->
 
-<!--           TODO <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-source-plugin</artifactId>-->
-<!--                <version>3.0.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>attach-sources</id>-->
-<!--                        <phase>verify</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>jar</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
+           <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
     </build>

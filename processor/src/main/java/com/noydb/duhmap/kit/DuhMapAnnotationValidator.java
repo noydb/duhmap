@@ -16,6 +16,7 @@ import javax.lang.model.util.Types;
 import java.util.List;
 
 import static com.noydb.duhmap.kit.DuhMapAnnotationStrictValidator.validate;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getFullyQualifiedName;
 
 public final class DuhMapAnnotationValidator {
 
@@ -32,21 +33,30 @@ public final class DuhMapAnnotationValidator {
     ) {
         final var interfaceEls = roundEnv.getElementsAnnotatedWith(DuhMap.class);
 
-        for (final var element : interfaceEls) {
-            if (element.getKind() != ElementKind.INTERFACE) {
-                throw new DuhMapException("You may only use DuhMap annotation with an interface");
+        for (final var el : interfaceEls) {
+            final var interfaceEl = (TypeElement) el;
+            if (interfaceEl.getKind() != ElementKind.INTERFACE) {
+                throw new DuhMapException(
+                        String.format(
+                                "You may only use @DuhMap annotation with an interface (problem in %s)",
+                                getFullyQualifiedName(interfaceEl)
+                        )
+                );
             }
 
-            if (element.getEnclosedElements().stream().anyMatch(e -> e.getKind() != ElementKind.METHOD)) {
-                throw new DuhMapException("Interfaces in DuhMap must contain methods only");
+            if (interfaceEl.getEnclosedElements().stream().anyMatch(e -> e.getKind() != ElementKind.METHOD)) {
+                throw new DuhMapException("Interfaces in DuhMap must contain methods only", interfaceEl);
             }
 
-            for (final var enclosedElement : element.getEnclosedElements()) {
+            for (final var enclosedElement : interfaceEl.getEnclosedElements()) {
                 final var methodEl = (ExecutableElement) enclosedElement;
-
-                List<? extends VariableElement> parameters = methodEl.getParameters();
+                final List<? extends VariableElement> parameters = methodEl.getParameters();
                 if (parameters.size() != 1) {
-                    throw new DuhMapException("You can only map exactly one class to another in a DuhMap method");
+                    throw new DuhMapException(
+                            "You can only map exactly one class to another in a DuhMap method",
+                            methodEl,
+                            interfaceEl
+                    );
                 }
 
                 final VariableElement param = parameters.get(0);
@@ -55,16 +65,16 @@ public final class DuhMapAnnotationValidator {
 
                 // declared is interface or class
                 if (parameterType.getKind() != TypeKind.DECLARED) {
-                    throw new DuhMapException("You can only map classes (to classes) in DuhMap");
+                    throw new DuhMapException("You can only map classes (to classes) in DuhMap", methodEl, interfaceEl);
                 }
 
-                if (types.isAssignable(parameterType, types.getDeclaredType((TypeElement) element))) {
-                    throw new DuhMapException("Interfaces cannot be mapped in DuhMap");
+                if (types.isAssignable(parameterType, types.getDeclaredType(interfaceEl))) {
+                    throw new DuhMapException("Interfaces cannot be the source nor target type in DuhMap", methodEl, interfaceEl);
                 }
             }
 
-            if (element.getAnnotation(DuhMap.class).strictChecks()) {
-                validate(element, processingEnv);
+            if (interfaceEl.getAnnotation(DuhMap.class).strictChecks()) {
+                validate(interfaceEl, processingEnv);
             }
         }
 
@@ -72,22 +82,27 @@ public final class DuhMapAnnotationValidator {
     }
 
     private static void validateMethodAnnotations(final RoundEnvironment roundEnv) {
-        for (Element element : roundEnv.getElementsAnnotatedWith(DuhMapMethod.class)) {
-            if (element.getKind() != ElementKind.METHOD) {
-                throw new DuhMapException("You may only use DuhMapMethod annotation with a method");
+        for (final Element methodEl : roundEnv.getElementsAnnotatedWith(DuhMapMethod.class)) {
+            if (methodEl.getKind() != ElementKind.METHOD) {
+                throw new DuhMapException("You may only use DuhMapMethod annotation with a method", (ExecutableElement) methodEl);
             }
 
-            final var enclosingEl = element.getEnclosingElement();
+            final var enclosingEl = methodEl.getEnclosingElement();
             if (!enclosingEl.getKind().equals(ElementKind.INTERFACE)) {
                 throw new DuhMapException(
-                        "You may only use a DuhMapMethod annotation inside an interface annotated with @DuhMap"
+                        "You may only use a DuhMapMethod annotation inside an interface annotated with @DuhMap",
+                        (ExecutableElement) methodEl,
+                        (TypeElement) enclosingEl
                 );
             }
 
             final DuhMap interfaceAnnotation = enclosingEl.getAnnotation(DuhMap.class);
             if (interfaceAnnotation == null) {
                 throw new DuhMapException(
-                        "You must annotate your interface " + ProcessorUtils.getName(enclosingEl) + " with @DuhMap in order to use @DuhMapMethod"
+                        String.format(
+                                "You must annotate the interface %s with @DuhMap in order to use @DuhMapMethod",
+                                getFullyQualifiedName((TypeElement) enclosingEl)
+                        )
                 );
             }
         }

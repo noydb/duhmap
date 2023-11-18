@@ -10,9 +10,9 @@ import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class ProcessorUtils {
+public final class DuhMapProcessorUtils {
 
-    private ProcessorUtils() {
+    private DuhMapProcessorUtils() {
         // do not instantiate
     }
 
@@ -45,4 +45,11 @@ public final class ProcessorUtils {
         return sourceFields;
     }
 
+    public static String getFullyQualifiedName(final TypeElement element) {
+        return String.format(
+                "%s.%s",
+                element.getEnclosingElement().toString(),
+                element.getSimpleName().toString()
+        );
+    }
 }

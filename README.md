@@ -28,6 +28,7 @@ Configuration properties are available:
 - Add implicitClass (default true) to interface and method annotations. if strictChecks=true, implicitCast cannot be true
 - fFormating: no whitespace, "minify" the output. 
 - static method template.
+- add ability to disable any one of the strict rules
 
 ---
 

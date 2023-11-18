@@ -5,7 +5,7 @@ import com.noydb.duhmap.annotation.DuhMapMethod;
 import com.noydb.duhmap.error.DuhMapException;
 import com.noydb.duhmap.kit.DuhMapAnnotationValidator;
 import com.noydb.duhmap.kit.DuhMapTemplates;
-import com.noydb.duhmap.kit.ProcessorUtils;
+import com.noydb.duhmap.kit.DuhMapProcessorUtils;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -27,10 +27,13 @@ import java.util.List;
 import java.util.Set;
 
 import static com.noydb.duhmap.kit.DuhMapTemplates.getTemplate;
-import static com.noydb.duhmap.kit.ProcessorUtils.asTypeElement;
-import static com.noydb.duhmap.kit.ProcessorUtils.getName;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.asTypeElement;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getName;
 
-@SupportedAnnotationTypes("com.noydb.duhmap.annotation.DuhMap")
+@SupportedAnnotationTypes({
+        "com.noydb.duhmap.annotation.DuhMap",
+        "com.noydb.duhmap.annotation.DuhMapMethod"
+})
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
@@ -44,7 +47,7 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
             final var interfaceEl = (TypeElement) el;
             final var annotation = interfaceEl.getAnnotation(DuhMap.class);
             final var name = getName(interfaceEl);
-            final var packageName = ProcessorUtils.getPackageName(interfaceEl);
+            final var packageName = DuhMapProcessorUtils.getPackageName(interfaceEl);
             final var outputClassName = "Duh" + name;
 
             final var builder = new StringBuilder();
@@ -146,13 +149,27 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         try {
             fileObject = filer.createResource(StandardLocation.SOURCE_OUTPUT, packageName, className + ".java");
         } catch (final IOException e) {
-            throw new DuhMapException(e);
+            throw new DuhMapException(
+                    String.format(
+                            "Error during writing of DuhMap file to source output for class: %s.%s",
+                            packageName,
+                            className
+                    ),
+                    e
+            );
         }
 
         try (final Writer writer = fileObject.openWriter()) {
             writer.write(content);
         } catch (final IOException e) {
-            throw new DuhMapException(e);
+            throw new DuhMapException(
+                    String.format(
+                            "Error during writing of DuhMap file to source output for class: %s.%s",
+                            packageName,
+                            className
+                    ),
+                    e
+            );
         }
     }
 }

@@ -14,8 +14,8 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 import java.util.List;
 
-import static com.noydb.duhmap.kit.ProcessorUtils.asTypeElement;
-import static com.noydb.duhmap.kit.ProcessorUtils.getName;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.asTypeElement;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getFullyQualifiedName;
 
 public final class DuhMapAnnotationStrictValidator {
 
@@ -36,12 +36,12 @@ public final class DuhMapAnnotationStrictValidator {
 
             final TypeMirror paramType = ((ExecutableElement) el).getParameters().get(0).asType();
             final var paramEl = (TypeElement) ((DeclaredType) paramType).asElement();
-            final var paramClassFields = ProcessorUtils.getFields(paramEl);
+            final var paramClassFields = DuhMapProcessorUtils.getFields(paramEl);
 
             final var returnTypeEl = asTypeElement(
                     processingEnv, ((ExecutableType) el.asType()).getReturnType()
             );
-            final var returnTypeClassFields = ProcessorUtils.getFields(returnTypeEl);
+            final var returnTypeClassFields = DuhMapProcessorUtils.getFields(returnTypeEl);
 
             validateFieldsMatch(paramClassFields, returnTypeClassFields, paramEl, returnTypeEl);
             validateIgnoredFieldsExist(
@@ -58,8 +58,8 @@ public final class DuhMapAnnotationStrictValidator {
             final TypeElement paramEl,
             final TypeElement returnTypeEl
     ) {
-        final var paramClassName = getName(paramEl);
-        final var returnTypeClassName = getName(returnTypeEl);
+        final var paramClassName = getFullyQualifiedName(paramEl);
+        final var returnTypeClassName = getFullyQualifiedName(returnTypeEl);
 
         if (paramClassFields.size() != returnTypeClassFields.size()) {
             throw new StrictDuhMapException(
@@ -102,7 +102,7 @@ public final class DuhMapAnnotationStrictValidator {
                 throw new StrictDuhMapException(
                         String.format(
                                 "For interface: %s the ignored field %s does not exist in the source and target classes",
-                                getName(interfaceEl),
+                                getFullyQualifiedName((TypeElement) interfaceEl),
                                 ignoredField
                         )
                 );
