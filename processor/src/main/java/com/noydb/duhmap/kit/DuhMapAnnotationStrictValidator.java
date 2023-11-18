@@ -24,7 +24,10 @@ public final class DuhMapAnnotationStrictValidator {
         // do not instantiate
     }
 
-    public static void validate(Element interfaceEl, final ProcessingEnvironment processingEnv) {
+    public static void run(
+            final ProcessingEnvironment processingEnv,
+            final Element interfaceEl
+    ) {
         final var annotation = interfaceEl.getAnnotation(DuhMap.class);
         if (!annotation.strictChecks()) {
             return;

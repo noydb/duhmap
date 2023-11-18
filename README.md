@@ -3,23 +3,29 @@
 A simple, opinionated, dependency-free Java mapper class generator. Uses an annotation processor to analyze applicable interfaces
  and generate mapping methods (by writing java source files during compilation). 
 
-Configuration properties are available:
+#### Interface Configurations
 - `strictChecks`
+- `ignoredMethods`
+- `beanType`
+- 
+
+#### Method Configurations
 - `ignore`
 - `ignoreFields`
-- `beanType`
+- `nullSafe`
+- `mapList`
 
 ---
 
 ### TODOs: 
 - test what happens if you have a field on one class but it's not on the other
 - disable/handle enums & lists when they are fields on source & target? & other types.....?
+- maybe allow mapAll with spring bean, by adding list to interface and using mapAll with it. explain in readme
 - 
 ---
 
 ### 2.0
 - static method template.
-- Map Lists/ArrayLists/Collections. Same logic, but just need for loop logic. could do mapAll on regular method, so it generates list impl, or choose collection type
 - Ability to reference one generated mapper from another generated mapper
 - Add implicitClass (default true) to interface and method annotations. if strictChecks=true, implicitCast cannot be true
 - build @DuhDTO

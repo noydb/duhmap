@@ -22,8 +22,6 @@ import java.lang.annotation.Target;
 // record
 public @interface DuhMap {
 
-    String[] ignoredMethods() default "";
-
     /**
      * If enabled, the source and target
      * classes must possess identical
@@ -32,6 +30,8 @@ public @interface DuhMap {
      * in the source and target classes.
      */
     boolean strictChecks() default false;
+
+    String[] ignoredMethods() default "";
 
     DuhMapBeanType beanType() default DuhMapBeanType.DEFAULT;
 }

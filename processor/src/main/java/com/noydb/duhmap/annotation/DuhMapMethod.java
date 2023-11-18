@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-// marks  the annotation as only available
+// marks the annotation as only available
 // at source processing. So not available
 // at runtime
 @Retention(RetentionPolicy.SOURCE)
@@ -14,12 +14,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface DuhMapMethod {
 
-    String[] ignoredFields() default {};
-
     boolean ignore() default false;
+
+    String[] ignoredFields() default {};
 
     boolean nullSafe() default true;
 
-    boolean mapAll() default false;
+    boolean mapList() default false;
 
 }

@@ -37,7 +37,7 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
             final Set<? extends TypeElement> annotations,
             final RoundEnvironment roundEnv
     ) {
-        DuhMapAnnotationValidator.performValidations(roundEnv, processingEnv);
+        DuhMapAnnotationValidator.run(roundEnv, processingEnv);
 
         for (final Element el : roundEnv.getElementsAnnotatedWith(DuhMap.class)) {
             final var interfaceEl = (TypeElement) el;
@@ -79,14 +79,14 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         final var methodName = getName(methodEl);
         final var methodAnnotation = methodEl.getAnnotation(DuhMapMethod.class);
         final var methodExEl = ((ExecutableElement) methodEl);
-        final var returnTypeEl = asTypeElement(processingEnv, methodExEl.getReturnType());
+        final var targetClassEl = asTypeElement(processingEnv, methodExEl.getReturnType());
         final var sourceClassEl = asTypeElement(processingEnv, methodExEl.getParameters().get(0).asType());
 
         if (ignoredMethods.contains(methodName) || methodAnnotation != null && methodAnnotation.ignore()) {
             builder.append(
                     String.format(
                             DuhMapTemplates.IGNORED_METHOD_SIGNATURE,
-                            getFullyQualifiedName(returnTypeEl),
+                            getFullyQualifiedName(targetClassEl),
                             methodName,
                             getFullyQualifiedName(sourceClassEl)
                     )
@@ -100,16 +100,16 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
                         getMethodSignature(methodAnnotation),
                         // we use fully qualified names so we don't
                         // have to worry about importing
-                        getFullyQualifiedName(returnTypeEl),
+                        getFullyQualifiedName(targetClassEl),
                         methodName,
                         getFullyQualifiedName(sourceClassEl)
                 )
         );
 
         builder.append("        final ");
-        builder.append(returnTypeEl);
+        builder.append(targetClassEl);
         builder.append(" target = new ");
-        builder.append(returnTypeEl);
+        builder.append(targetClassEl);
         builder.append("();");
         builder.append("\n");
 
@@ -132,9 +132,40 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         builder.append("    }");
         builder.append("\n");
         builder.append("\n");
+
+        if (methodAnnotation != null && methodAnnotation.mapList()) {
+            createListMappingMethod(builder, methodExEl, targetClassEl, sourceClassEl);
+        }
     }
 
-    private void mapFields(final StringBuilder builder, final Element paramEl, final List<String> ignoredFields) {
+    private void createListMappingMethod(
+            final StringBuilder builder,
+            final ExecutableElement methodExEl,
+            final TypeElement targetClassEl,
+            final TypeElement sourceClassEl
+    ) {
+        final var srcClassName = getName(sourceClassEl);
+        final var targetClassName = getName(targetClassEl);
+        final var methodName = getName(methodExEl);
+        builder.append(
+                String.format(
+                        DuhMapTemplates.MAP_ALL_METHOD_SIGNATURE,
+                        targetClassName,
+                        methodName,
+                        srcClassName,
+                        targetClassName,
+                        srcClassName,
+                        methodName
+                )
+        );
+        builder.append("\n");
+    }
+
+    private void mapFields(
+            final StringBuilder builder,
+            final Element paramEl,
+            final List<String> ignoredFields
+    ) {
         for (final Element field : paramEl.getEnclosedElements()) {
             final var fieldName = getName(field);
             if (!field.getKind().isField() || ignoredFields.contains(fieldName)) {

@@ -62,7 +62,7 @@ public final class DuhMapTemplates {
                 
             """;
 
-    // 0 = return type class
+    // 0 = target class
     // 1 = method name
     // 2 = source (parameter) type class
     public static final String METHOD_SIGNATURE = """
@@ -70,20 +70,34 @@ public final class DuhMapTemplates {
                     public %s %s(final %s source) {
                 """;
 
-    // 0 = return type class
-    // 1 = method name
-    // 2 = source (parameter) type class
     public static final String NULL_SAFE_METHOD_SIGNATURE =
             METHOD_SIGNATURE +
                     "        if (source == null) return null;\n"
             + "\n";
 
-    // 0 = return type class
+    // 0 = target class
     // 1 = method name
-    // 2 = source (parameter) type class
+    // 2 = source class
     public static final String IGNORED_METHOD_SIGNATURE = """
                     @Override
                     public %s %s(final %s source) { return null; };
+                """;
+
+    // 0 = target class
+    // 1 = methodName
+    // 2 = source class
+    // 3 = target class
+    // 4 = source class
+    // 5 = original/default map method name
+    public static final String MAP_ALL_METHOD_SIGNATURE = """
+                    public java.util.List<%s> %s(final java.util.List<%s> sources) {
+                        final java.util.List<%s> targets = new java.util.ArrayList<>();
+                        for (final %s source: sources) {
+                            targets.add(%s(source));
+                        }
+                    
+                        return targets;
+                    }
                 """;
 
     // 0 = (capitalized) field name

@@ -18,7 +18,7 @@ public class DuhMapException extends RuntimeException {
     public DuhMapException(final String message, final ExecutableElement methodEl, final TypeElement interfaceEl) {
         super(
                 String.format(
-                        "%s for: %s#%s",
+                        "%s | %s#%s",
                         message,
                         getFullyQualifiedName(interfaceEl),
                         methodEl.getSimpleName()
@@ -29,7 +29,7 @@ public class DuhMapException extends RuntimeException {
     public DuhMapException(final String message, final TypeElement interfaceEl) {
         super(
                 String.format(
-                        "%s for interface: %s",
+                        "%s | interface: %s",
                         message,
                         getFullyQualifiedName(interfaceEl)
                 )
@@ -37,6 +37,6 @@ public class DuhMapException extends RuntimeException {
     }
 
     public DuhMapException(final String message, final ExecutableElement methodEl) {
-        super(String.format("%s for method: %s", message, methodEl.getSimpleName()));
+        super(String.format("%s | method: %s", message, methodEl.getSimpleName()));
     }
 }

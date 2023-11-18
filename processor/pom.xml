@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>processor</artifactId>
-    <version>0.5.3</version>
+    <version>0.6.0</version>
     <description>The core engine that converts annotated interfaces into configurable mapper classes</description>
 
     <build>
