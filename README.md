@@ -3,7 +3,7 @@
 
 A simple, opinionated, dependency-free, Java library for generating configurable mapper classes. This library uses an annotation processor to analyze applicable interfaces and generate mapping methods. This is done by constructing & writing java source files - to the `generated-sources` directory - during the compilation phase.
 
-### Step One
+### 1.
 ```xml
 <dependencies>
     <dependency>
@@ -14,7 +14,7 @@ A simple, opinionated, dependency-free, Java library for generating configurable
 </dependencies>
 ```
 
-### Step Two
+### 2.
 ```Java
 package ...;
 
@@ -30,7 +30,7 @@ public interface StudentMapper {
 }
 ```
 
-### Result
+### Done
 ```Java
 package ...;
 
