@@ -66,7 +66,9 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
             builder.append("}");
 
-            DuhMapProcessorUtils.writeToFile(processingEnv, packageName, outputClassName, builder.toString());
+            DuhMapProcessorUtils.writeToFile(
+                    processingEnv, packageName, outputClassName, builder.toString()
+            );
         }
 
         return true;
@@ -80,10 +82,15 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         final var methodName = getName(methodEl);
         final var methodAnnotation = methodEl.getAnnotation(DuhMapMethod.class);
         final var methodExEl = ((ExecutableElement) methodEl);
-        final var targetClassEl = asTypeElement(processingEnv, methodExEl.getReturnType());
-        final var sourceClassEl = asTypeElement(processingEnv, methodExEl.getParameters().get(0).asType());
+        final var targetClassEl = asTypeElement(
+                processingEnv, methodExEl.getReturnType()
+        );
+        final var sourceType = methodExEl.getParameters().get(0).asType();
+        final var sourceClassEl = asTypeElement(processingEnv, sourceType);
 
-        if (ignoredMethods.contains(methodName) || methodAnnotation != null && methodAnnotation.ignore()) {
+        if (ignoredMethods.contains(methodName)
+                || methodAnnotation != null && methodAnnotation.ignore()
+        ) {
             builder.append(
                     String.format(
                             DuhMapTemplates.IGNORED_METHOD_SIGNATURE,
@@ -116,7 +123,6 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
         // we have validated already that
         // there is only one parameter
-        final var paramTypeMirror = methodExEl.getParameters().get(0).asType();
 
         List<String> ignoredFields = new ArrayList<>();
         if (methodAnnotation != null) {
@@ -124,8 +130,7 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         }
         mapFields(
                 builder,
-                // we've validated it's a class (DeclaredType)
-                ((DeclaredType) paramTypeMirror).asElement(),
+                sourceClassEl,
                 ignoredFields
         );
 
@@ -173,8 +178,14 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
                 continue;
             }
 
-            final var fieldNameUppercase = Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-            builder.append(String.format(DuhMapTemplates.SET_METHOD, fieldNameUppercase, fieldNameUppercase));
+            final var fieldNameUppercase = Character.toUpperCase(fieldName.charAt(0))+ fieldName.substring(1);
+            builder.append(
+                    String.format(
+                            DuhMapTemplates.SET_METHOD,
+                            fieldNameUppercase,
+                            fieldNameUppercase
+                    )
+            );
             builder.append("\n");
         }
     }
