@@ -1,4 +1,4 @@
-# Duhmap
+# DuhMap
 
 A simple dependency-less, somewhat opinionated java mapper class generator. Uses an annotation processor to analyze applicable interfaces
  and generate mapping methods (by writing java source files during compilation). 
