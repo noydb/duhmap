@@ -6,11 +6,11 @@
     <parent>
         <groupId>com.noydb.duhmap</groupId>
         <artifactId>duhmapper</artifactId>
-        <version>0.5.0</version>
+        <version>0.5.1</version>
     </parent>
 
     <artifactId>processor</artifactId>
-    <version>0.6.1</version>
+    <version>${duhmap.processor.version}</version>
     <description>The core engine that converts annotated interfaces into configurable mapper classes</description>
 
     <build>
@@ -18,7 +18,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-<!--                TODO <version>3.8.1</version>-->
+                <version>3.11.0</version>
                 <executions>
                     <execution>
                         <id>default-compile</id>
@@ -30,20 +30,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-source-plugin</artifactId>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <id>attach-sources</id>-->
-<!--                        <phase>verify</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>jar</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
 
 <!--           TODO <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
@@ -64,7 +50,7 @@
            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>

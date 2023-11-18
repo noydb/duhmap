@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.STRICT_CHECK_KEYS;
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.asTypeElement;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.doStrictCheck;
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getFullyQualifiedName;
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getName;
 
@@ -73,7 +75,8 @@ public final class DuhMapAnnotationValidator {
             final ProcessingEnvironment processingEnv,
             final TypeElement interfaceEl
     ) {
-        for (final var enclosedElement : interfaceEl.getEnclosedElements()) {
+        final var methods = interfaceEl.getEnclosedElements();
+        for (final var enclosedElement : methods) {
             final var methodEl = (ExecutableElement) enclosedElement;
             final List<? extends VariableElement> parameters = methodEl.getParameters();
             if (parameters.size() != 1) {
@@ -97,6 +100,8 @@ public final class DuhMapAnnotationValidator {
                 throw new DuhMapException("Interfaces cannot be the source nor target type in DuhMap", methodEl, interfaceEl);
             }
         }
+
+        validateIgnoredMethods(interfaceEl, methods);
     }
 
     private static void validateDuhMapMethodAnnotations(final RoundEnvironment roundEnv) {
@@ -149,61 +154,83 @@ public final class DuhMapAnnotationValidator {
 
             final TypeMirror paramType = ((ExecutableElement) el).getParameters().get(0).asType();
             final var paramEl = (TypeElement) ((DeclaredType) paramType).asElement();
-            final var paramClassFields = DuhMapProcessorUtils.getFields(paramEl);
+            final var sourceFieldEls = DuhMapProcessorUtils.getFields(paramEl);
 
-            final var returnTypeEl = asTypeElement(
+            final var targetTypeEl = asTypeElement(
                     processingEnv, ((ExecutableType) el.asType()).getReturnType()
             );
-            final var returnTypeClassFields = DuhMapProcessorUtils.getFields(returnTypeEl);
+            final var targetFieldEls = DuhMapProcessorUtils.getFields(targetTypeEl);
 
+            final var sourceClassName = getFullyQualifiedName(paramEl);
+            final var targetClassName = getFullyQualifiedName(targetTypeEl);
 
-            final var paramClassName = getFullyQualifiedName(paramEl);
-            final var returnTypeClassName = getFullyQualifiedName(returnTypeEl);
-
-            if (paramClassFields.size() != returnTypeClassFields.size()) {
-                handleSeverity(annotation, String.format(
-                        "Mismatching field count for source and target classes: %s(%s) %s(%s)",
-                        returnTypeClassName,
-                        returnTypeClassFields,
-                        paramClassName,
-                        paramClassFields));
+            if (sourceFieldEls.size() != targetFieldEls.size()) {
+                handleSeverity(
+                        annotation,
+                        String.format(
+                                "Mismatching field count for source and target classes: %s(%s) %s(%s)",
+                                targetClassName,
+                                targetFieldEls,
+                                sourceClassName,
+                                sourceFieldEls
+                        ),
+                        STRICT_CHECK_KEYS[2]
+                );
             }
 
-            final var sourceFieldsSorted = paramClassFields
+            final var sourceFieldsSorted = sourceFieldEls
                     .stream()
                     .sorted(Comparator.comparing(DuhMapProcessorUtils::getName))
                     .toList();
-            final var returnFieldsSorted = returnTypeClassFields
+            final var targetFieldsSorted = targetFieldEls
                     .stream()
                     .sorted(Comparator.comparing(DuhMapProcessorUtils::getName))
                     .toList();
 
             for (int i = 0; i < sourceFieldsSorted.size(); i++) {
-                final var sourceField = sourceFieldsSorted.get(i);
-                final var returnField = returnFieldsSorted.get(i);
-
-                if (!sourceField.getSimpleName().equals(returnField.getSimpleName())) {
-                    handleSeverity(annotation, String.format(
-                            "Mismatching fields between source and target classes: %s(%s) VS %s(%s)",
-                            paramClassName,
-                            sourceFieldsSorted,
-                            returnTypeClassName,
-                            returnFieldsSorted
-                    ));
+                final var sourceFieldEl = sourceFieldsSorted.get(i);
+                // target may not have as many fields
+                // this prevents IndexOutOfBoundsException
+                if (i == targetFieldsSorted.size()) {
+                    break;
                 }
 
-                if (!sourceField.asType().equals(returnField.asType())) {
-                    handleSeverity(annotation, String.format(
-                            "Types mismatching between source and target fields: %s(%s) VS %s(%s)",
-                            paramClassName,
-                            getName(sourceField),
-                            returnTypeClassName,
-                            getName(returnField)
-                    ));
+                final var targetFieldEl = targetFieldsSorted.get(i);
+
+                if (!sourceFieldEl.getSimpleName().equals(targetFieldEl.getSimpleName())) {
+                    handleSeverity(
+                            annotation,
+                            String.format(
+                                    "Mismatching fields between source and target classes: %s(%s) VS %s(%s)",
+                                    sourceClassName,
+                                    sourceFieldsSorted,
+                                    targetClassName,
+                                    targetFieldsSorted
+                            ),
+                            STRICT_CHECK_KEYS[2]
+                    );
+                }
+
+                final var sourceType = sourceFieldEl.asType();
+                final var targetType = targetFieldEl.asType();
+                if (!sourceType.equals(targetType)) {
+                    handleSeverity(
+                            annotation,
+                            String.format(
+                                    "Types mismatching between source and target fields: %s(%s %s) VS %s(%s %s)",
+                                    sourceClassName,
+                                    sourceType,
+                                    getName(sourceFieldEl),
+                                    targetClassName,
+                                    targetType,
+                                    getName(targetFieldEl)
+                            ),
+                            STRICT_CHECK_KEYS[3]
+                    );
                 }
             }
 
-            validateIgnoredFieldsExist(paramClassFields, el.getAnnotation(DuhMapMethod.class), interfaceEl);
+            validateIgnoredFieldsExist(sourceFieldEls, el.getAnnotation(DuhMapMethod.class), interfaceEl);
         }
     }
 
@@ -211,7 +238,7 @@ public final class DuhMapAnnotationValidator {
     // as we've already validated both
     // classes have identical fields
     private static void validateIgnoredFieldsExist(
-            final List<Element> paramClassFields,
+            final List<VariableElement> paramClassFields,
             final DuhMapMethod annotation,
             final TypeElement interfaceEl
     ) {
@@ -228,16 +255,47 @@ public final class DuhMapAnnotationValidator {
         }
 
         if (!nonExistentFields.isEmpty()) {
-            handleSeverity(interfaceEl.getAnnotation(DuhMap.class), String.format(
-                    "For interface: %s invalid ignored field(s) %s",
-                    getFullyQualifiedName(interfaceEl),
-                    nonExistentFields
-            ));
+            handleSeverity(
+                    interfaceEl.getAnnotation(DuhMap.class),
+                    String.format(
+                            "For interface: %s invalid ignored field(s) %s",
+                            getFullyQualifiedName(interfaceEl),
+                            nonExistentFields
+                    ),
+                    STRICT_CHECK_KEYS[1]
+            );
         }
     }
 
-    private static void handleSeverity(final DuhMap annotation, final String error) {
-        if (annotation.strictChecks()) {
+    private static void validateIgnoredMethods(final TypeElement interfaceEl, final List<? extends Element> methods) {
+        final var annotation = interfaceEl.getAnnotation(DuhMap.class);
+        final var ignoredMethods = annotation.ignoredMethods();
+        // second condition: for some reason,
+        // specifying no value for the attribute
+        // causes a blank string to come through
+        // dunno how to default value in the annotation
+        // class to not do it
+        if (ignoredMethods == null || (ignoredMethods.length == 1 && ignoredMethods[0].trim().isBlank())) {
+            return;
+        }
+
+        for (final var ignoredMethod : ignoredMethods) {
+            if (methods.stream().noneMatch(e -> e.getSimpleName().toString().equals(ignoredMethod))) {
+                handleSeverity(
+                        annotation,
+                        String.format(
+                                "The specified ignored method \"%s\" does not exist | %s",
+                                ignoredMethod,
+                                getFullyQualifiedName(interfaceEl)
+                        ),
+                        STRICT_CHECK_KEYS[0]
+                );
+            }
+        }
+    }
+
+    private static void handleSeverity(final DuhMap annotation, final String error, final String strictRule) {
+        if (annotation.strictChecks() && doStrictCheck(annotation, strictRule)) {
             throw new StrictDuhMapException(error);
         } else {
             System.out.println("[WARNING]");

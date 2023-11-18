@@ -4,7 +4,7 @@ public class Student {
 
     private String firstName;
     private String lastName;
-    private int age;
+    private double age;
 
     public Student(String firstName, String lastName, int age) {
         this.firstName = firstName;
@@ -32,11 +32,11 @@ public class Student {
         this.lastName = lastName;
     }
 
-    public int getAge() {
+    public double getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(double age) {
         this.age = age;
     }
 

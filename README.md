@@ -79,25 +79,27 @@ Configure the type of java bean to generate.
 - `SPRING`: Spring Framework based bean, configured through use of `@Component` making the annotated interface available for dependency injection in Spring applications 
 - `STATIC`: un-instantiable final class implementing the interface methods as public static methods
 
-#### `ignoredMethods` TODO
+#### `ignoredMethods`
 Instruct the processor not to map the specified methods during generation. 
 
 Note: for `SPRING` & `DEFAULT` bean types, the method will be implemented but immediately return null.
 
-#### `ignoredStrictChecks` TODO
-Disable compilation failure by specifiying any combination of the string values below (when `strictChecks=true`)
+#### `ignoredStrictChecks`
+Disable compilation failure by specifying any combination of the string values below (when `strictChecks=true`)
 
-- `ignoreFields`
+- `ignoredFields`
 - `mismatchingFields`
-- `ignoredMethods`
-- `implicitCasting`
-- `implicitCasting`: By default, the processor will [widen](https://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html#jls-5.1.2) source variables, if the target field type permits doing so. 
+- TODO `ignoredMethods`
+- `typeSafe`: By default, the processor will enforce identical types between source and target fields. Disabling this rule can allow [widening](https://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html#jls-5.1.2), however be careful not to map inconvertible types
 
 #### `strictChecks`
 
 Throw compilation errors if any of the criteria listed below are not met:
-  - Specified ignored fields do not exist on the source and target.
-  - The source and target classes do not possess identical fields. Equality is determined by number of fields, names, and types.
+- Specified ignored fields do not exist on the source and target classes.
+- Specified ignored methods do not exist within the annotated interface
+- The source and target class possess a different number of fields.
+- The source and target possess fields whose names differ. 
+- The source and target classes do not possess corresponding fields whose types differ.
 
 ---
 
@@ -117,10 +119,10 @@ Instruct the processor not to map the specified fields contained within the sour
 
 Generate a list implementation of the annotated method. It will replicate the original method, but the parameter & return type signatures will be type-safe `java.util.List` variables
 
-**Note**: for Spring beans, you can utilize this annotation by defining the list method - replicating the one DuhMap will generate - **in the annotated interface**. This is so that when you inject the bean - but do so referencing the interface - the generated list methods will be detected) 
+**Note**: for Spring beans, you can utilize this annotation by defining the list method - replicating the one DuhMap will generate - **in the annotated interface**. This is so that when you inject the bean - but do so referencing the interface - the generated list methods will be detected.
 
 #### `nullSafe`
-Generate null checks inside all generated mapper methods (the source class will be checked for null)
+Generate null checks inside all generated mapper methods (the source class will be checked for null first)
 
 ---
 
@@ -128,19 +130,16 @@ Generate null checks inside all generated mapper methods (the source class will 
 - test what happens if you have a field on one class but it's not on the other
 - disable/handle enums & lists when they are fields on source & target? & other types.....?
 - validate ignoredMethods exist 
+- do you map as many fields as you can in order, and stop when target doesn't have the field? what if you order them and the last two fields aren't the same, but the lengths are? 
 
 ---
 
 ## 2.0
 - static method template.
 - Ability to reference one generated mapper from another generated mapper (ideally "smartly" detect if a mapper exists for a class, use it, else throw. compilation order is important or maybe not?)
-- Add implicitClass (default true) to interface and method annotations. if strictChecks=true, implicitCast cannot be true
 - build @DuhDTO
-- add ability to disable any one of the strict rules
 - Logging
 - Proper unit testing
-- ignored methods
-- ignoredStrictChecks
 
 ---
 

@@ -5,8 +5,12 @@ import com.noydb.duhmap.annotation.DuhMapBeanType;
 import com.noydb.duhmap.annotation.DuhMapMethod;
 import com.noydb.duhmap.error.DuhMapException;
 
+import javax.lang.model.element.TypeElement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.STRICT_CHECK_KEYS;
 
 /*************************************
  DO NOT FORMAT THIS CLASS. IT WILL BREAK
@@ -15,7 +19,7 @@ import java.time.format.DateTimeFormatter;
  There is probably a better way of
  doing this. processing external
  templates maybe.
-/*************************************/
+ /*************************************/
 public final class DuhMapTemplates {
 
     // 0 = fully qualified package

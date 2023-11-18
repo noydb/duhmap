@@ -1,5 +1,6 @@
 package com.noydb.duhmap.kit;
 
+import com.noydb.duhmap.annotation.DuhMap;
 import com.noydb.duhmap.error.DuhMapException;
 
 import javax.annotation.processing.Filer;
@@ -7,15 +8,24 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class DuhMapProcessorUtils {
+
+    static final String[] STRICT_CHECK_KEYS = {
+            "ignoredMethods",
+            "ignoredFields",
+            "mismatchedFields",
+            "typeSafe"
+    };
 
     private DuhMapProcessorUtils() {
         // do not instantiate
@@ -39,11 +49,11 @@ public final class DuhMapProcessorUtils {
         return element.getSimpleName().toString();
     }
 
-    public static List<Element> getFields(final Element classEl) {
-        final var sourceFields = new ArrayList<Element>();
+    public static List<VariableElement> getFields(final Element classEl) {
+        final var sourceFields = new ArrayList<VariableElement>();
         for (final var field : classEl.getEnclosedElements()) {
             if (field.getKind().isField()) {
-                sourceFields.add(field);
+                sourceFields.add((VariableElement) field);
             }
         }
 
@@ -92,5 +102,12 @@ public final class DuhMapProcessorUtils {
                     e
             );
         }
+    }
+
+    public static boolean doStrictCheck(final DuhMap annotation, final String strictRule) {
+        final String[] ignoredStrictChecks = annotation.ignoredStrictChecks();
+        return Arrays
+                .stream(ignoredStrictChecks != null ? ignoredStrictChecks : new String[0])
+                .noneMatch(ignoredStrictCheck -> ignoredStrictCheck.equals(strictRule));
     }
 }

@@ -34,4 +34,6 @@ public @interface DuhMap {
     String[] ignoredMethods() default "";
 
     DuhMapBeanType beanType() default DuhMapBeanType.DEFAULT;
+
+    String[] ignoredStrictChecks() default "";
 }

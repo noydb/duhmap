@@ -6,20 +6,20 @@
     <parent>
         <groupId>com.noydb.duhmap</groupId>
         <artifactId>duhmapper</artifactId>
-        <version>0.5.0</version>
+        <version>0.5.1</version>
     </parent>
 
     <artifactId>runner</artifactId>
     <version>0.0.0-final</version>
     <description>
-        A simple test module to practice and test the processor. Zero importance in regards to this library
+        A simple test module to practice and test the processor. Zero importance in regard to this library
     </description>
 
     <dependencies>
         <dependency>
             <groupId>com.noydb.duhmap</groupId>
             <artifactId>processor</artifactId>
-            <version>0.6.1</version>
+            <version>${duhmap.processor.version}</version>
         </dependency>
     </dependencies>
 
