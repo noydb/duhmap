@@ -121,9 +121,6 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
         builder.append("();");
         builder.append("\n");
 
-        // we have validated already that
-        // there is only one parameter
-
         List<String> ignoredFields = new ArrayList<>();
         if (methodAnnotation != null) {
             ignoredFields = Arrays.asList(methodAnnotation.ignoredFields());
@@ -178,7 +175,7 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
                 continue;
             }
 
-            final var fieldNameUppercase = Character.toUpperCase(fieldName.charAt(0))+ fieldName.substring(1);
+            final var fieldNameUppercase = Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
             builder.append(
                     String.format(
                             DuhMapTemplates.SET_METHOD,
