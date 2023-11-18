@@ -18,4 +18,6 @@ public @interface DuhMapMethod {
 
     boolean ignore() default false;
 
+    boolean nullSafe() default true;
+
 }

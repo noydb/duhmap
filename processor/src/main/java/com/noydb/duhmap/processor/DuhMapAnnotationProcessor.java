@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getFullyQualifiedName;
+import static com.noydb.duhmap.kit.DuhMapTemplates.getMethodSignature;
 import static com.noydb.duhmap.kit.DuhMapTemplates.getTemplate;
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.asTypeElement;
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getName;
@@ -80,27 +82,36 @@ public final class DuhMapAnnotationProcessor extends AbstractProcessor {
             final Element methodEl,
             final List<String> ignoredMethods
     ) {
-        final var methodExEl = ((ExecutableElement) methodEl);
         final var methodName = getName(methodEl);
+        final var methodAnnotation = methodEl.getAnnotation(DuhMapMethod.class);
+        final var methodExEl = ((ExecutableElement) methodEl);
         final var returnTypeEl = asTypeElement(processingEnv, methodExEl.getReturnType());
         final var sourceClassEl = asTypeElement(processingEnv, methodExEl.getParameters().get(0).asType());
-        builder.append(
-                String.format(
-                        DuhMapTemplates.METHOD_SIGNATURE,
-                        // we use fully qualified names so we don't
-                        // have to worry about importing
-                        returnTypeEl.getEnclosingElement().toString() + "." + getName(returnTypeEl),
-                        methodName,
-                        sourceClassEl.getEnclosingElement().toString() + "." + getName(sourceClassEl)
-                )
-        );
-        final var methodAnnotation = methodEl.getAnnotation(DuhMapMethod.class);
+
         if (ignoredMethods.contains(methodName) || methodAnnotation != null && methodAnnotation.ignore()) {
-            builder.append("         return null; \n    }\n");
+            builder.append(
+                    String.format(
+                            DuhMapTemplates.IGNORED_METHOD_SIGNATURE,
+                            getFullyQualifiedName(returnTypeEl),
+                            methodName,
+                            getFullyQualifiedName(sourceClassEl)
+                    )
+            );
+
             return;
         }
 
-        builder.append("\n");
+        builder.append(
+                String.format(
+                        getMethodSignature(methodAnnotation),
+                        // we use fully qualified names so we don't
+                        // have to worry about importing
+                        getFullyQualifiedName(returnTypeEl),
+                        methodName,
+                        getFullyQualifiedName(sourceClassEl)
+                )
+        );
+
         builder.append("        final ");
         builder.append(returnTypeEl);
         builder.append(" target = new ");

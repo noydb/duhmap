@@ -2,6 +2,7 @@ package com.noydb.duhmap.kit;
 
 import com.noydb.duhmap.annotation.DuhMap;
 import com.noydb.duhmap.annotation.DuhMapBeanType;
+import com.noydb.duhmap.annotation.DuhMapMethod;
 import com.noydb.duhmap.error.DuhMapException;
 
 import java.time.LocalDateTime;
@@ -69,6 +70,22 @@ public final class DuhMapTemplates {
                     public %s %s(final %s source) {
                 """;
 
+    // 0 = return type class
+    // 1 = method name
+    // 2 = source (parameter) type class
+    public static final String NULL_SAFE_METHOD_SIGNATURE =
+            METHOD_SIGNATURE +
+                    "        if (source == null) return null;\n"
+            + "\n";
+
+    // 0 = return type class
+    // 1 = method name
+    // 2 = source (parameter) type class
+    public static final String IGNORED_METHOD_SIGNATURE = """
+                    @Override
+                    public %s %s(final %s source) { return null; };
+                """;
+
     // 0 = (capitalized) field name
     // 1 = (capitalized) field name
     public static final String SET_METHOD = "        target.set%s(source.get%s());";
@@ -101,5 +118,17 @@ public final class DuhMapTemplates {
                 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
                 System.getProperty("java.version")
         );
+    }
+
+    public static String getMethodSignature(final DuhMapMethod annotation) {
+        if (annotation == null) {
+            return METHOD_SIGNATURE;
+        }
+
+        final var nullSafe = annotation.nullSafe();
+
+        if (nullSafe) return NULL_SAFE_METHOD_SIGNATURE;
+
+        return METHOD_SIGNATURE;
     }
 }

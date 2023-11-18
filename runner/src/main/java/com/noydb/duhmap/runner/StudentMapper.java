@@ -7,7 +7,7 @@ import com.noydb.duhmap.annotation.DuhMapMethod;
 public interface StudentMapper {
 
     @DuhMapMethod(ignoredFields = {"age", "firstName"})
-    Student mapTo(StudentDTO dto, String t);
+    Student mapTo(StudentDTO dto);
 
     @DuhMapMethod(ignore = true)
     StudentDTO mapFrom(Student student);
