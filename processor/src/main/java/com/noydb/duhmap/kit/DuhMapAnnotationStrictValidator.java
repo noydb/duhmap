@@ -23,7 +23,7 @@ public final class DuhMapAnnotationStrictValidator {
         // do not instantiate
     }
 
-    public static void validateStrictly(Element interfaceEl, final ProcessingEnvironment processingEnv) {
+    public static void validate(Element interfaceEl, final ProcessingEnvironment processingEnv) {
         final var annotation = interfaceEl.getAnnotation(DuhMap.class);
         if (!annotation.strictChecks()) {
             return;
@@ -59,11 +59,9 @@ public final class DuhMapAnnotationStrictValidator {
             final TypeElement returnTypeEl
     ) {
         final var paramClassName = getName(paramEl);
-        final var paramFieldCount = paramClassFields.size();
-        final var returnTypeFieldCount = returnTypeClassFields.size();
         final var returnTypeClassName = getName(returnTypeEl);
 
-        if (paramFieldCount != returnTypeFieldCount) {
+        if (paramClassFields.size() != returnTypeClassFields.size()) {
             throw new StrictDuhMapException(
                     String.format(
                             "There was a mismatch between the number of fields for the classes: %s(%s) %s(%s)",

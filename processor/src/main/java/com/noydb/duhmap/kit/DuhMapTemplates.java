@@ -7,6 +7,14 @@ import com.noydb.duhmap.error.DuhMapException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/*************************************
+ DO NOT FORMAT THIS CLASS. IT WILL BREAK
+ THE "PRETTINESS" OF THE TEMPLATES.
+
+ There is probably a better way of
+ doing this. processing external
+ templates maybe.
+/*************************************/
 public final class DuhMapTemplates {
 
     // 0 = fully qualified package
@@ -79,11 +87,9 @@ public final class DuhMapTemplates {
 
     public static String getTemplate(final DuhMap annotation) {
         final var type = annotation.beanType();
-        if (type == null || type == DuhMapBeanType.DEFAULT) {
-            return DEFAULT_CLASS;
-        }
 
-        if (type == DuhMapBeanType.SPRING) return DuhMapTemplates.SPRING_CLASS;
+        if (type == null || type == DuhMapBeanType.DEFAULT) return DEFAULT_CLASS;
+        else if (type == DuhMapBeanType.SPRING) return DuhMapTemplates.SPRING_CLASS;
         else if (type == DuhMapBeanType.STATIC) return DuhMapTemplates.STATIC_CLASS;
 
         throw new DuhMapException("Unable to determine class template for DuhMap");

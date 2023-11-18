@@ -15,7 +15,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.util.Types;
 import java.util.List;
 
-import static com.noydb.duhmap.kit.DuhMapAnnotationStrictValidator.validateStrictly;
+import static com.noydb.duhmap.kit.DuhMapAnnotationStrictValidator.validate;
 
 public final class DuhMapAnnotationValidator {
 
@@ -64,7 +64,7 @@ public final class DuhMapAnnotationValidator {
             }
 
             if (element.getAnnotation(DuhMap.class).strictChecks()) {
-                validateStrictly(element, processingEnv);
+                validate(element, processingEnv);
             }
         }
 
