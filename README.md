@@ -14,6 +14,12 @@ A simple, opinionated, dependency-free, Java library for generating configurable
 </dependencies>
 ```
 
+```gradle
+dependencies {
+    implementation 'com.noydb.duhmap:processor:${duhmap.version}'
+}
+```
+
 ### 2.
 ```Java
 package ...;
@@ -32,6 +38,7 @@ public interface StudentMapper {
 
 ### 3.
 `mvn clean install`
+`gradle build`
 
 ### Done.
 ```Java
@@ -85,21 +92,21 @@ Instruct the processor not to map the specified methods during generation.
 Note: for `SPRING` & `DEFAULT` bean types, the method will be implemented but immediately return null.
 
 #### `ignoredStrictChecks`
-Disable compilation failure by specifying any combination of the string values below (when `strictChecks=true`)
+Disable compilation failure by specifying any combination of the string values below (when `strictChecks=true`).
 
 - `ignoredFields`
 - `mismatchingFields`
-- TODO `ignoredMethods`
-- `typeSafe`: By default, the processor will enforce identical types between source and target fields. Disabling this rule can allow [widening](https://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html#jls-5.1.2), however be careful not to map inconvertible types
+- `ignoredMethods`
+- `typeSafe`: by default, the processor will enforce identical types between source and target fields. Disabling this rule can allow [widening](https://docs.oracle.com/javase/specs/jls/se7/html/jls-5.html#jls-5.1.2), however be careful not to map inconvertible types.
 
 #### `strictChecks`
 
 Throw compilation errors if any of the criteria listed below are not met:
 - Specified ignored fields do not exist on the source and target classes.
-- Specified ignored methods do not exist within the annotated interface
+- Specified ignored methods do not exist within the annotated interface.
 - The source and target class possess a different number of fields.
-- The source and target possess fields whose names differ. 
-- The source and target classes do not possess corresponding fields whose types differ.
+- The source and target class possess fields whose names differ. 
+- The source and target class possess corresponding fields whose types differ.
 
 ---
 
@@ -117,19 +124,18 @@ Instruct the processor not to map the specified fields contained within the sour
 
 #### `mapList`
 
-Generate a list implementation of the annotated method. It will replicate the original method, but the parameter & return type signatures will be type-safe `java.util.List` variables
+Generate a typesafe java.util.List implementation of the annotated method. It will replicate the original method, but the parameter & return type signatures will be type-safe `java.util.List` variables.
 
-**Note**: for Spring beans, you can utilize this annotation by defining the list method - replicating the one DuhMap will generate - **in the annotated interface**. This is so that when you inject the bean - but do so referencing the interface - the generated list methods will be detected.
+**Note**: for Spring beans, you can utilize this annotation by defining the list method - (exactly as the processor will generate it - **in the annotated interface**. This is so that when you inject the bean - but do so referencing the interface - the generated list methods will be detected.
 
 #### `nullSafe`
-Generate null checks inside all generated mapper methods (the source class will be checked for null first)
+Generate null checks inside all generated mapper methods (the source class will be checked for null).
 
 ---
 
 ## TODOs
 - test what happens if you have a field on one class but it's not on the other
 - disable/handle enums & lists when they are fields on source & target? & other types.....?
-- validate ignoredMethods exist 
 - do you map as many fields as you can in order, and stop when target doesn't have the field? what if you order them and the last two fields aren't the same, but the lengths are? 
 
 ---
