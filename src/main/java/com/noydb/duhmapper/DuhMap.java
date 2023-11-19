@@ -1,4 +1,7 @@
-package com.noydb.duhmap.annotation;
+package com.noydb.duhmapper;
+
+import com.noydb.duhmapper.kit.DuhMapClassType;
+import com.noydb.duhmapper.kit.DuhMapStrictRule;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,7 +36,7 @@ public @interface DuhMap {
 
     String[] ignoredMethods() default "";
 
-    DuhMapBeanType beanType() default DuhMapBeanType.DEFAULT;
+    DuhMapClassType beanType() default DuhMapClassType.DEFAULT;
 
-    String[] ignoredStrictChecks() default "";
+    DuhMapStrictRule[] ignoredStrictChecks() default {};
 }
