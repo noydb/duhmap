@@ -3,25 +3,128 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.noydb.duhmap</groupId>
+    <groupId>com.noydb</groupId>
     <artifactId>duhmapper</artifactId>
     <name>duhmapper</name>
-    <version>0.5.1</version>
+    <version>0.6.0-flat</version>
     <description>app for mapping classes through method annotations</description>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>processor</module>
-        <module>runner</module>
-    </modules>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-
-        <duhmap.processor.version>0.6.0</duhmap.processor.version>
     </properties>
+
+    <build>
+
+        <plugins>
+
+            <!--            <plugin>-->
+            <!--                <groupId>org.springframework.boot</groupId>-->
+            <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
+            <!--                <version>3.1.2</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <goals>-->
+            <!--                            <goal>repackage</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>&ndash;&gt;-->
+            <!--                            <outputDirectory>${project.build.directory}/BOOT-INF/classes</outputDirectory>-->
+            <!--                            <resources>-->
+            <!--                                <resource>-->
+            <!--                                    <directory>${project.build.directory}/generated-sources/annotations</directory>-->
+            <!--                                </resource>-->
+            <!--                            </resources>-->
+            <!--                        </configuration>-->
+            <!--                        <configuration></configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <!--                <configuration>-->
+                <!--                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>-->
+                <!--                </configuration>-->
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                            <!-- https://cdivilly.wordpress.com/2010/03/16/maven-and-jsr-269-annotation-processors/ -->
+                            <compilerArgument>-proc:none</compilerArgument>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <!-- for accessing version of this module programmatically -->
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Automatic-Module-Name>com.noydb.duhmapper</Automatic-Module-Name>
+                            <Spring-Boot-Jar-Type>annotation-processor</Spring-Boot-Jar-Type>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Maven Resources Plugin -->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-resources-plugin</artifactId>-->
+            <!--                <version>2.4.3</version> &lt;!&ndash; Use the latest version available &ndash;&gt;-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>copy-specific-files</id>-->
+            <!--                        <phase>package</phase> &lt;!&ndash; or another appropriate phase &ndash;&gt;-->
+            <!--                        <goals>-->
+            <!--                            <goal>copy-resources</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <outputDirectory>${project.build.directory}/BOOT-INF/classes</outputDirectory>-->
+            <!--                            <resources>-->
+            <!--                                <resource>-->
+            <!--                                    <directory>${project.build.directory}/generated-sources/annotations</directory>-->
+            <!--&lt;!&ndash;                                    <includes>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                        <include>specific-file1.txt</include>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                        <include>specific-file2.xml</include>&ndash;&gt;-->
+            <!--&lt;!&ndash;                                        &lt;!&ndash; Add more specific files as needed &ndash;&gt;&ndash;&gt;-->
+            <!--&lt;!&ndash;                                    </includes>&ndash;&gt;-->
+            <!--                                </resource>-->
+            <!--                            </resources>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+
+        </plugins>
+    </build>
 
 </project>

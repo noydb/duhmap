@@ -1,4 +1,4 @@
-package com.noydb.duhmap.annotation;
+package com.noydb.duhmapper;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
