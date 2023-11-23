@@ -1,4 +1,4 @@
-package com.noydb.duhmap.error;
+package com.noydb.duhmapper.error;
 
 public class StrictDuhMapException extends DuhMapException {
 

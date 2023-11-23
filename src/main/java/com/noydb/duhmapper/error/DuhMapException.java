@@ -1,9 +1,9 @@
-package com.noydb.duhmap.error;
+package com.noydb.duhmapper.error;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
-import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getFullyQualifiedName;
+import static com.noydb.duhmapper.kit.DuhMapProcessorUtils.getFullyQualifiedName;
 
 public class DuhMapException extends RuntimeException {
 
