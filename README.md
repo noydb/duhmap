@@ -232,6 +232,7 @@ https://github.com/mapstruct/mapstruct/blob/main/distribution/pom.xml
 
 ### Research, Useful Info, Etc.
 
+- https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/package-summary.html
 - https://github.com/chdir/aidl2/
 - https://stackoverflow.com/questions/47779403/annotation-processing-roundenvironment-processingover/47782562#47782562
 - understand java versioning etc (`@SupportedSourceVersion(SourceVersion.RELEASE_8)`)
@@ -243,3 +244,4 @@ https://github.com/mapstruct/mapstruct/blob/main/distribution/pom.xml
   method. Using instanceof is not necessarily a reliable idiom for determining the effective class of an object in this
   modeling hierarchy since an implementation may choose to have a single object implement multiple Element
   subinterfaces.
+  
