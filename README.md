@@ -191,3 +191,4 @@ Generate null checks inside all generated mapper methods (the source class will 
 - https://github.com/mapstruct/mapstruct/blob/main/processor/src/main/java/org/mapstruct/ap/MappingProcessor.java
 - https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml
 - https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml
+- https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/package-summary.html
