@@ -14,7 +14,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +29,7 @@ import static com.noydb.duhmap.kit.DuhMapTemplates.getTemplate;
         "com.noydb.duhmap.annotation.DuhMap",
         "com.noydb.duhmap.annotation.DuhMapMethod"
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 public final class DuhMapAnnotationProcessor extends AbstractProcessor {
 
     @Override

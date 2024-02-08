@@ -9,7 +9,7 @@ public interface StudentMapper {
     @DuhMapMethod(mapList = true)
     Student mapTo(StudentDTO dto);
 
-    @DuhMapMethod(ignore = true)
+    @DuhMapMethod(mapList = true)
     StudentDTO mapFrom(Student student);
 
 }

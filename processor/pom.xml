@@ -18,6 +18,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>${java.version}</release>
+                    <generatedSourcesDirectory>${project.build.directory}/generated-sources</generatedSourcesDirectory>
+                </configuration>
                 <version>3.11.0</version>
                 <executions>
                     <execution>
@@ -30,22 +34,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-<!--           TODO <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-jar-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <archive>-->
-<!--                        <manifest>-->
-<!--                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
-<!--                        </manifest>-->
-<!--                        <manifestEntries>-->
-<!--                            <Automatic-Module-Name>com.noydb.duhmap.processor</Automatic-Module-Name>-->
-<!--                            <Spring-Boot-Jar-Type>annotation-processor</Spring-Boot-Jar-Type>-->
-<!--                        </manifestEntries>-->
-<!--                    </archive>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
 
            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

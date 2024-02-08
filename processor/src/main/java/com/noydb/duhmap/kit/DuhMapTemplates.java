@@ -31,7 +31,7 @@ public final class DuhMapTemplates {
 
             import javax.annotation.processing.Generated;
                         
-            %spublic final class %s implements %s {
+            %spublic class %s implements %s {
 
             """;
 
@@ -46,7 +46,7 @@ public final class DuhMapTemplates {
                 import org.springframework.stereotype.Component;
                             
                 @Component
-                %spublic final class %s implements %s {
+                %spublic class %s implements %s {
 
                 """;
 
@@ -61,7 +61,7 @@ public final class DuhMapTemplates {
                 import javax.annotation.processing.Generated;
                 import org.springframework.stereotype.Component;
                             
-                %spublic final class %s {
+                %spublic class %s {
                     private %s () { // do not instantiate }
                 
             """;
