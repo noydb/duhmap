@@ -13,13 +13,13 @@ writing java source files - to the `generated-sources` directory - during the co
 
     <!-- ... -->
 
-    <dependencies>
-        <dependency>
-            <groupId>com.noydb</groupId>
-            <artifactId>duhmapper</artifactId>
-            <version>${duhmap.version}</version>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>com.noydb.duhmap</groupId>
+      <artifactId>processor</artifactId>
+      <version>${duhmap.processor.version}</version>
+    </dependency>
+  </dependencies>
 
     <!-- ... -->
 
@@ -29,8 +29,8 @@ writing java source files - to the `generated-sources` directory - during the co
         <configuration>
             <annotationProcessorPaths>
                 <path>
-                    <groupId>com.noydb</groupId>
-                    <artifactId>duhmapper</artifactId>
+                    <groupId>com.noydb.duhmap</groupId>
+                    <artifactId>processor</artifactId>
                     <version>${duhmap.version}</version>
                 </path>
             </annotationProcessorPaths>
@@ -44,7 +44,7 @@ writing java source files - to the `generated-sources` directory - during the co
 
 ```gradle
 dependencies {
-    implementation 'com.noydb.duhmap:duhmapper:${duhmap.version}'
+    implementation 'com.noydb.duhmap:processor:${duhmap.version}'
     annotationProcessor 'com.noydb.duhmap:processor:${duhmap.version}'
 }
 ```
@@ -72,7 +72,7 @@ public interface StudentMapper {
 
 `gradle build`
 
-### Result:
+### 4.
 
 ```Java
 package com.helloworld;
@@ -90,7 +90,7 @@ public final class DuhStudentMapper implements StudentMapper {
     public com.noydb.duhmap.runner.Student mapTo(final com.noydb.duhmap.runner.StudentDTO source) {
         if (source == null) return null;
 
-        final com.noydb.duhmapper.runner.Student target = new com.noydb.duhmapper.runner.Student();
+        final com.noydb.duhmap.runner.Student target = new com.noydb.duhmap.runner.Student();
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
 
@@ -179,7 +179,6 @@ Generate null checks inside all generated mapper methods (the source class will 
 
 ## 1.0
 
-- `typeSafe`
 - validate interface contains nothing other than methods
 - disable/handle enums & lists when they are fields on source & target? & other types.....? - document which types of fields are ignored
 - Figure out handling mismatchingFields most effectively:
@@ -188,12 +187,11 @@ Generate null checks inside all generated mapper methods (the source class will 
 - Proper unit testing
 - make sure mismatching fields still log. think i broke it
 - test again fully, make sure everything is working
-- sort maven plugin versioning
 
 ### Build Issue
 need to run processor in separate compile step? -proc:only. see error in intellij:
 java: An exception has occurred in the compiler (17.0.4.1). Please file a bug against the Java compiler via the Java bug reporting page (http://bugreport.java.com) after checking the Bug Database (http://bugs.java.com) for duplicates. Include your program, the following diagnostic, and the parameters passed to the Java compiler in your report. Thank you.
-java: java.util.ServiceConfigurationError: javax.annotation.processing.Processor: Provider com.noydb.duhmapper.DuhMapAnnotationProcessor not found
+java: java.util.ServiceConfigurationError: javax.annotation.processing.Processor: Provider com.noydb.duhmap.DuhMapAnnotationProcessor not found
 java: 	at java.base/java.util.ServiceLoader.fail(ServiceLoader.java:593)
 java: 	at java.base/java.util.ServiceLoader$LazyClassPathLookupIterator.nextProviderClass(ServiceLoader.java:1219)
 

@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.noydb.duhmap</groupId>
         <artifactId>duhmapper</artifactId>
-        <version>0.5.1</version>
+        <version>0.6.1</version>
     </parent>
 
     <artifactId>processor</artifactId>

@@ -6,7 +6,7 @@
     <groupId>com.noydb.duhmap</groupId>
     <artifactId>duhmapper</artifactId>
     <name>duhmapper</name>
-    <version>0.5.1</version>
+    <version>0.6.1</version>
     <description>app for mapping classes through method annotations</description>
     <packaging>pom</packaging>
 
