@@ -1,7 +1,6 @@
 package com.noydb.duhmap.kit;
 
 import com.noydb.duhmap.annotation.DuhMap;
-import com.noydb.duhmap.annotation.DuhMapBeanType;
 import com.noydb.duhmap.annotation.DuhMapMethod;
 import com.noydb.duhmap.error.DuhMapException;
 import com.noydb.duhmap.error.StrictDuhMapException;
@@ -19,34 +18,41 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import static com.noydb.duhmap.kit.DuhMapProcessorUtils.STRICT_CHECK_KEYS;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.DUH_MAP_VERSION;
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.asTypeElement;
-import static com.noydb.duhmap.kit.DuhMapProcessorUtils.doStrictCheck;
 import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getFullyQualifiedName;
-import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getName;
+import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getMismatchingFieldsLog;
 
 public final class DuhMapAnnotationValidator {
+
+    private static final String START_WARNING_LOG = String.format("duhmap:%s - WARNING", DUH_MAP_VERSION);
+    private static final String END_WARNING_LOG = "NOTE: having strict checks enabled would have caused this build to fail.\n";
 
     private DuhMapAnnotationValidator() {
         // do not instantiate
     }
 
-    // must be a method
-    // each method must have one parameter
-    // each method's parameter (source) and
+    // 1. only an interface can be annotated
+    // with @DuhMap
+    // 2. it must only contain methods
+    // 3. each method must have one parameter
+    // 4. each method's parameter (source) and
     // return type (target) must be a class
     public static void run(
             final RoundEnvironment roundEnv,
             final ProcessingEnvironment processingEnv
     ) {
-        validateDuhMapAnnotations(processingEnv, roundEnv);
-        validateDuhMapMethodAnnotations(roundEnv);
+        validateAnnotatedInterfaces(processingEnv, roundEnv);
+        validateAnnotatedMethods(roundEnv);
     }
 
-    private static void validateDuhMapAnnotations(
+    private static void validateAnnotatedInterfaces(
             final ProcessingEnvironment processingEnv,
             final RoundEnvironment roundEnv
     ) {
@@ -104,7 +110,7 @@ public final class DuhMapAnnotationValidator {
         validateIgnoredMethods(interfaceEl, methods);
     }
 
-    private static void validateDuhMapMethodAnnotations(final RoundEnvironment roundEnv) {
+    private static void validateAnnotatedMethods(final RoundEnvironment roundEnv) {
         for (final Element methodEl : roundEnv.getElementsAnnotatedWith(DuhMapMethod.class)) {
             if (methodEl.getKind() != ElementKind.METHOD) {
                 throw new DuhMapException("You may only use DuhMapMethod annotation with a method", (ExecutableElement) methodEl);
@@ -128,17 +134,6 @@ public final class DuhMapAnnotationValidator {
                         )
                 );
             }
-
-            final var isSpringBean = interfaceAnnotation.beanType().equals(DuhMapBeanType.SPRING);
-            if (isSpringBean && methodEl.getAnnotation(DuhMapMethod.class).mapList()) {
-                throw new DuhMapException(
-                        "You cannot currently use mapList=true in conjunction with a Spring Bean due to the list " +
-                                "method generation mechanism",
-                        (ExecutableElement) methodEl,
-                        (TypeElement) enclosingEl
-                );
-            }
-
         }
     }
 
@@ -146,8 +141,9 @@ public final class DuhMapAnnotationValidator {
             final ProcessingEnvironment processingEnv,
             final TypeElement interfaceEl
     ) {
-        final var annotation = interfaceEl.getAnnotation(DuhMap.class);
         for (final var el : interfaceEl.getEnclosedElements()) {
+            final var strictFails = new HashSet<DuhMapStrictRule>();
+
             if (!el.getKind().equals(ElementKind.METHOD)) {
                 continue;
             }
@@ -161,21 +157,8 @@ public final class DuhMapAnnotationValidator {
             );
             final var targetFieldEls = DuhMapProcessorUtils.getFields(targetTypeEl);
 
-            final var sourceClassName = getFullyQualifiedName(paramEl);
-            final var targetClassName = getFullyQualifiedName(targetTypeEl);
-
             if (sourceFieldEls.size() != targetFieldEls.size()) {
-                handleSeverity(
-                        annotation,
-                        String.format(
-                                "Mismatching field count for source and target classes: %s(%s) %s(%s)",
-                                targetClassName,
-                                targetFieldEls,
-                                sourceClassName,
-                                sourceFieldEls
-                        ),
-                        STRICT_CHECK_KEYS[2]
-                );
+                strictFails.add(DuhMapStrictRule.MISMATCHED_FIELD_COUNT);
             }
 
             final var sourceFieldsSorted = sourceFieldEls
@@ -198,36 +181,31 @@ public final class DuhMapAnnotationValidator {
                 final var targetFieldEl = targetFieldsSorted.get(i);
 
                 if (!sourceFieldEl.getSimpleName().equals(targetFieldEl.getSimpleName())) {
-                    handleSeverity(
-                            annotation,
-                            String.format(
-                                    "Mismatching fields between source and target classes: %s(%s) VS %s(%s)",
-                                    sourceClassName,
-                                    sourceFieldsSorted,
-                                    targetClassName,
-                                    targetFieldsSorted
-                            ),
-                            STRICT_CHECK_KEYS[2]
-                    );
+                    strictFails.add(DuhMapStrictRule.MISMATCHED_FIELD_NAMES);
                 }
 
                 final var sourceType = sourceFieldEl.asType();
                 final var targetType = targetFieldEl.asType();
                 if (!sourceType.equals(targetType)) {
-                    handleSeverity(
-                            annotation,
-                            String.format(
-                                    "Types mismatching between source and target fields: %s(%s %s) VS %s(%s %s)",
-                                    sourceClassName,
-                                    sourceType,
-                                    getName(sourceFieldEl),
-                                    targetClassName,
-                                    targetType,
-                                    getName(targetFieldEl)
-                            ),
-                            STRICT_CHECK_KEYS[3]
-                    );
+                    strictFails.add(DuhMapStrictRule.MISMATCHED_FIELD_TYPE);
                 }
+            }
+
+            if (!strictFails.isEmpty()) {
+                handleFieldStrictFailure(
+                        interfaceEl.getAnnotation(DuhMap.class),
+                        String.format(
+                                "Field rules: %s failed for %s",
+                                strictFails,
+                                getMismatchingFieldsLog(
+                                        sourceFieldEls,
+                                        targetFieldEls,
+                                        getFullyQualifiedName(paramEl),
+                                        getFullyQualifiedName(targetTypeEl)
+                                )
+                        ),
+                        strictFails
+                );
             }
 
             validateIgnoredFieldsExist(sourceFieldEls, el.getAnnotation(DuhMapMethod.class), interfaceEl);
@@ -242,6 +220,10 @@ public final class DuhMapAnnotationValidator {
             final DuhMapMethod annotation,
             final TypeElement interfaceEl
     ) {
+        if (annotation == null) {
+            return;
+        }
+
         final var paramNames = paramClassFields
                 .stream()
                 .map(DuhMapProcessorUtils::getName)
@@ -255,14 +237,14 @@ public final class DuhMapAnnotationValidator {
         }
 
         if (!nonExistentFields.isEmpty()) {
-            handleSeverity(
+            handleFieldStrictFailure(
                     interfaceEl.getAnnotation(DuhMap.class),
                     String.format(
                             "For interface: %s invalid ignored field(s) %s",
                             getFullyQualifiedName(interfaceEl),
                             nonExistentFields
                     ),
-                    STRICT_CHECK_KEYS[1]
+                    DuhMapStrictRule.IGNORED_FIELDS
             );
         }
     }
@@ -281,26 +263,58 @@ public final class DuhMapAnnotationValidator {
 
         for (final var ignoredMethod : ignoredMethods) {
             if (methods.stream().noneMatch(e -> e.getSimpleName().toString().equals(ignoredMethod))) {
-                handleSeverity(
+                handleFieldStrictFailure(
                         annotation,
                         String.format(
                                 "The specified ignored method \"%s\" does not exist | %s",
                                 ignoredMethod,
                                 getFullyQualifiedName(interfaceEl)
                         ),
-                        STRICT_CHECK_KEYS[0]
+                        DuhMapStrictRule.IGNORED_METHODS
                 );
             }
         }
     }
 
-    private static void handleSeverity(final DuhMap annotation, final String error, final String strictRule) {
-        if (annotation.strictChecks() && doStrictCheck(annotation, strictRule)) {
-            throw new StrictDuhMapException(error);
+    private static void handleFieldStrictFailure(
+            final DuhMap annotation,
+            final String message,
+            final DuhMapStrictRule strictRule
+    ) {
+        if (annotation.strictChecks() && doStrictCheck(annotation, Set.of(strictRule))) {
+            throw new StrictDuhMapException(message);
         } else {
-            System.out.println("[WARNING]");
-            System.out.println(error);
-            System.out.println("[/WARNING]");
+            System.out.println(START_WARNING_LOG);
+            System.out.println(message);
+            System.out.println(END_WARNING_LOG);
         }
+    }
+
+    private static void handleFieldStrictFailure(
+            final DuhMap annotation,
+            final String message,
+            final Set<DuhMapStrictRule> strictRules
+    ) {
+        if (annotation.strictChecks() && doStrictCheck(annotation, strictRules)) {
+            throw new StrictDuhMapException(message);
+        } else {
+            System.out.println(START_WARNING_LOG);
+            System.out.println(message);
+            System.out.println(END_WARNING_LOG);
+        }
+    }
+
+    private static boolean doStrictCheck(final DuhMap annotation, final Set<DuhMapStrictRule> strictRules) {
+        final DuhMapStrictRule[] ignoredStrictChecks = annotation.ignoredStrictChecks();
+        return Arrays
+                .stream(ignoredStrictChecks != null ? ignoredStrictChecks : new String[0])
+                .noneMatch(ignoredStrictCheck -> {
+                    for (final var strictRule : strictRules) {
+                        if (strictRule.equals(ignoredStrictCheck)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 }

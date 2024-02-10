@@ -1,6 +1,6 @@
-# DuhMap
+# duhmap
 
-### One Liner Mapper Method Generation
+### Mapper Method Generation
 
 A simple, opinionated, dependency-free Java library for generating configurable mapper classes. This library uses an
 annotation processor to analyze applicable interfaces and generate mapping methods. This is done by constructing &
@@ -9,19 +9,43 @@ writing java source files - to the `generated-sources` directory - during the co
 ### 1.
 
 ```xml
+<project>
 
-<dependencies>
-    <dependency>
-        <groupId>com.noydb.duhmap</groupId>
-        <artifactId>processor</artifactId>
-        <version>${duhmap.version}</version>
-    </dependency>
-</dependencies>
+    <!-- ... -->
+
+    <dependencies>
+        <dependency>
+            <groupId>com.noydb</groupId>
+            <artifactId>duhmapper</artifactId>
+            <version>${duhmap.version}</version>
+        </dependency>
+    </dependencies>
+
+    <!-- ... -->
+
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+            <annotationProcessorPaths>
+                <path>
+                    <groupId>com.noydb</groupId>
+                    <artifactId>duhmapper</artifactId>
+                    <version>${duhmap.version}</version>
+                </path>
+            </annotationProcessorPaths>
+        </configuration>
+    </plugin>
+
+  <!-- ... -->
+  
+</project>
 ```
 
 ```gradle
 dependencies {
-    implementation 'com.noydb.duhmap:processor:${duhmap.version}'
+    implementation 'com.noydb.duhmap:duhmapper:${duhmap.version}'
+    annotationProcessor 'com.noydb.duhmap:processor:${duhmap.version}'
 }
 ```
 
@@ -36,15 +60,15 @@ import com.noydb.duhmap.annotation.DuhMapMethod;
 @DuhMap(strictChecks = true)
 public interface StudentMapper {
 
-    @DuhMapMethod(mapList = true)
-    Student mapTo(StudentDTO dto);
+  @DuhMapMethod(mapList = true)
+  Student mapTo(StudentDTO dto);
 
 }
 ```
 
 ### 3.
 
-`mvn clean install`
+`mvn compile`
 
 `gradle build`
 
@@ -56,9 +80,9 @@ package com.helloworld;
 import javax.annotation.processing.Generated;
 
 @Generated(
-        value = "com.noydb.duhmap.processor.DuhMapAnnotationProcessor",
+        value = "com.noydb.duhmap.DuhMapAnnotationProcessor",
         date = "2023-11-18T22:20:35.842378",
-        comments = "java version: 17.0.4.1"
+        comments = "Java version: 17.0.4.1 | duhmap version 0.5.1"
 )
 public final class DuhStudentMapper implements StudentMapper {
 
@@ -66,7 +90,7 @@ public final class DuhStudentMapper implements StudentMapper {
     public com.noydb.duhmap.runner.Student mapTo(final com.noydb.duhmap.runner.StudentDTO source) {
         if (source == null) return null;
 
-        final com.noydb.duhmap.runner.Student target = new com.noydb.duhmap.runner.Student();
+        final com.noydb.duhmapper.runner.Student target = new com.noydb.duhmapper.runner.Student();
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
 
@@ -88,12 +112,12 @@ public final class DuhStudentMapper implements StudentMapper {
 
 ## `@DuhMap` Configurations
 
-#### `beanType`
+#### `classType`
 
-Configure the type of java bean to generate.
+Configure the type of java class to generate.
 
 - `DEFAULT`: concrete final class implementing the annotated interface's methods
-- `SPRING`: Spring Framework based bean, configured through use of `@Component` making the annotated interface available
+- `SPRING_BEAN`: Spring Framework based bean, configured through use of `@Component` making the annotated interface available
   for dependency injection in Spring applications
 - `STATIC`: un-instantiable final class implementing the interface methods as public static methods
 
@@ -101,7 +125,7 @@ Configure the type of java bean to generate.
 
 Instruct the processor not to map the specified methods during generation.
 
-**Note**: for `SPRING` & `DEFAULT` bean types, the method will be implemented but immediately return null.
+**Note**: for `DEFAULT` & `SPRING_BEAN` types, the method will be implemented but immediately return null.
 
 #### `ignoredStrictChecks`
 
@@ -132,7 +156,7 @@ Throw compilation errors if any of the criterion listed below are not met:
 
 Instruct the processor not to map the annotated method during generation.
 
-**Note**: for `SPRING` & `DEFAULT` bean types, the method will be implemented but immediately return null.
+**Note**: for `DEFAULT` & `SPRING_BEAN` types, the method will be implemented but immediately return null.
 
 #### `ignoredFields`
 
@@ -143,8 +167,8 @@ Instruct the processor not to map the specified fields contained within the sour
 Generate a typesafe java.util.List implementation of the annotated method. It will practically replicate and re-use the
 original method, but the parameter & return type signatures will be type-safe java.util.List variables.
 
-**Note**: for Spring beans, you can utilize this annotation by defining the list method - exactly as the processor will
-generate it - **in the annotated interface**. This is so that when you inject the bean - but do so referencing the
+**Note**: for `DEFAULT` & `SPRING_BEAN` types, you can utilize this annotation by defining the list method - exactly as the processor will
+generate it - **in the annotated interface**. This is so that when you use the class - but do so referencing the
 interface - the generated list methods will be detected.
 
 #### `nullSafe`
@@ -153,29 +177,60 @@ Generate null checks inside all generated mapper methods (the source class will 
 
 ---
 
-## TODOs
+## 1.0
 
-- disable/handle enums & lists when they are fields on source & target? & other types.....?
+- `typeSafe`
+- validate interface contains nothing other than methods
+- disable/handle enums & lists when they are fields on source & target? & other types.....? - document which types of fields are ignored
 - Figure out handling mismatchingFields most effectively:
-    - do you map as many fields as you can in order, and stop when target doesn't have the field? what if you order them
-      and the last two fields aren't the same, but the lengths are?
+  - do you map as many fields as you can in order, and stop when target doesn't have the field? what if you order them
+    and the last two fields aren't the same, but the lengths are?
+- Proper unit testing
+- make sure mismatching fields still log. think i broke it
+- test again fully, make sure everything is working
+- sort maven plugin versioning
+
+### Build Issue
+need to run processor in separate compile step? -proc:only. see error in intellij:
+java: An exception has occurred in the compiler (17.0.4.1). Please file a bug against the Java compiler via the Java bug reporting page (http://bugreport.java.com) after checking the Bug Database (http://bugs.java.com) for duplicates. Include your program, the following diagnostic, and the parameters passed to the Java compiler in your report. Thank you.
+java: java.util.ServiceConfigurationError: javax.annotation.processing.Processor: Provider com.noydb.duhmapper.DuhMapAnnotationProcessor not found
+java: 	at java.base/java.util.ServiceLoader.fail(ServiceLoader.java:593)
+java: 	at java.base/java.util.ServiceLoader$LazyClassPathLookupIterator.nextProviderClass(ServiceLoader.java:1219)
+
+https://stackoverflow.com/a/54281656/8061089
+
+https://maven.apache.org/plugins/maven-assembly-plugin/
+
+https://github.com/mapstruct/mapstruct/blob/main/distribution/src/main/assembly/dist.xml
+
+https://github.com/mapstruct/mapstruct/blob/main/distribution/pom.xml
 
 ---
 
 ## 2.0
 
+- validate that the mapList signature is valid compared to original method signature
 - static method template.
 - Ability to reference one generated mapper from another generated mapper (ideally "smartly" detect if a mapper exists
   for a class, use it, else throw. compilation order is important or maybe not?)
 - build @DuhDTO
 - Logging
-- Proper unit testing
+- names: rulost, needamap, dpin
+- Needed because the java files are on the compiler classpath: See: https://jira.codehaus.org/browse/MCOMPILER-97
+- If you control the source code I also recommend to package the processor in the same artifact as the annotations. Like
+  this, whenever you're using one of the annotations, the annotation processor is also picked-up by the compiler.
+- https://github.com/mapstruct/mapstruct/blob/main/processor/src/main/java/org/mapstruct/ap/MappingProcessor.java
+- https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml
+- https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml
+
 
 ---
 
 ### Research, Useful Info, Etc.
 
-- sort maven plugin versioning
+- https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/package-summary.html
+- https://github.com/chdir/aidl2/
+- https://stackoverflow.com/questions/47779403/annotation-processing-roundenvironment-processingover/47782562#47782562
 - understand java versioning etc (`@SupportedSourceVersion(SourceVersion.RELEASE_8)`)
 - Represents a program element such as a module, package, class, or method. Each element represents a compile-time
   language-level construct (and not, for example, a runtime construct of the virtual machine).
@@ -185,10 +240,4 @@ Generate null checks inside all generated mapper methods (the source class will 
   method. Using instanceof is not necessarily a reliable idiom for determining the effective class of an object in this
   modeling hierarchy since an implementation may choose to have a single object implement multiple Element
   subinterfaces.
-- Needed because the java files are on the compiler classpath: See: https://jira.codehaus.org/browse/MCOMPILER-97
-- If you control the source code I also recommend to package the processor in the same artifact as the annotations. Like
-  this, whenever you're using one of the annotations, the annotation processor is also picked-up by the compiler.
-- https://github.com/mapstruct/mapstruct/blob/main/processor/src/main/java/org/mapstruct/ap/MappingProcessor.java
-- https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml
-- https://github.com/pellaton/spring-configuration-validation-processor/blob/master/config-validation-processor-java11/pom.xml
-- https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/package-summary.html
+  

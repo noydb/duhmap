@@ -18,11 +18,25 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <duhmap.processor.version>0.6.0</duhmap.processor.version>
+        <duhmap.processor.version>0.7.0</duhmap.processor.version>
     </properties>
 
     <build>
+
+<!--        <plugins>-->
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <configuration>-->
+<!--                    <generatedSourcesDirectory>-->
+<!--                        ${project.build.directory}/generated-sources-->
+<!--                    </generatedSourcesDirectory>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+<!--        </plugins>-->
+
         <pluginManagement>
+
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -32,6 +46,13 @@
                         <release>${java.version}</release>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+
             </plugins>
         </pluginManagement>
     </build>

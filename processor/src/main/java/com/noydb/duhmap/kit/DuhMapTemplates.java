@@ -1,16 +1,11 @@
 package com.noydb.duhmap.kit;
 
-import com.noydb.duhmap.annotation.DuhMap;
-import com.noydb.duhmap.annotation.DuhMapBeanType;
-import com.noydb.duhmap.annotation.DuhMapMethod;
-import com.noydb.duhmap.error.DuhMapException;
-
-import javax.lang.model.element.TypeElement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 
-import static com.noydb.duhmap.kit.DuhMapProcessorUtils.STRICT_CHECK_KEYS;
+import com.noydb.duhmap.annotation.DuhMap;
+import com.noydb.duhmap.annotation.DuhMapMethod;
+import com.noydb.duhmap.error.DuhMapException;
 
 /*************************************
  DO NOT FORMAT THIS CLASS. IT WILL BREAK
@@ -31,7 +26,7 @@ public final class DuhMapTemplates {
 
             import javax.annotation.processing.Generated;
                         
-            %spublic class %s implements %s {
+            %spublic final class %s implements %s {
 
             """;
 
@@ -44,9 +39,9 @@ public final class DuhMapTemplates {
 
                 import javax.annotation.processing.Generated;
                 import org.springframework.stereotype.Component;
-                            
-                @Component
-                %spublic class %s implements %s {
+                
+                %s@Component
+                public class %s implements %s {
 
                 """;
 
@@ -61,7 +56,7 @@ public final class DuhMapTemplates {
                 import javax.annotation.processing.Generated;
                 import org.springframework.stereotype.Component;
                             
-                %spublic class %s {
+                %spublic final class %s {
                     private %s () { // do not instantiate }
                 
             """;
@@ -77,7 +72,7 @@ public final class DuhMapTemplates {
     public static final String NULL_SAFE_METHOD_SIGNATURE =
             METHOD_SIGNATURE +
                     "        if (source == null) return null;\n"
-            + "\n";
+                    + "\n";
 
     // 0 = target class
     // 1 = method name
@@ -93,7 +88,7 @@ public final class DuhMapTemplates {
     // 3 = target class
     // 4 = source class
     // 5 = original/default map method name
-    public static final String MAP_ALL_METHOD_SIGNATURE = """
+    public static final String LIST_METHOD = """
                     public java.util.List<%s> %s(final java.util.List<%s> sources) {
                         final java.util.List<%s> targets = new java.util.ArrayList<>();
                         for (final %s source : sources) {
@@ -106,13 +101,13 @@ public final class DuhMapTemplates {
 
     // 0 = (capitalized) field name
     // 1 = (capitalized) field name
-    public static final String SET_METHOD = "        target.set%s(source.get%s());";
+    public static final String FIELD = "        target.set%s(source.get%s());";
 
     private static final String GENERATED_ANNOTATION = """
                 @Generated(
-                     value = "com.noydb.duhmap.processor.DuhMapAnnotationProcessor",
+                     value = "com.noydb.duhmap.DuhMapAnnotationProcessor",
                      date = "%s",
-                     comments = "java version: %s"
+                     comments = "Java version: %s | duhmap version: %s"
                 )
                         """;
 
@@ -123,18 +118,19 @@ public final class DuhMapTemplates {
     public static String getTemplate(final DuhMap annotation) {
         final var type = annotation.beanType();
 
-        if (type == null || type == DuhMapBeanType.DEFAULT) return DEFAULT_CLASS;
-        else if (type == DuhMapBeanType.SPRING) return DuhMapTemplates.SPRING_CLASS;
-        else if (type == DuhMapBeanType.STATIC) return DuhMapTemplates.STATIC_CLASS;
+        if (type == null || type == DuhMapClassType.DEFAULT) return DEFAULT_CLASS;
+        else if (type == DuhMapClassType.SPRING_BEAN) return DuhMapTemplates.SPRING_CLASS;
+        else if (type == DuhMapClassType.STATIC) return DuhMapTemplates.STATIC_CLASS;
 
         throw new DuhMapException("Unable to determine class template for DuhMap");
     }
 
-    public static String getGeneratedAnnotation() {
+    public static String getGeneratedAnnotation(final String processorVersion) {
         return String.format(
                 DuhMapTemplates.GENERATED_ANNOTATION,
                 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-                System.getProperty("java.version")
+                System.getProperty("java.version"),
+                processorVersion
         );
     }
 
