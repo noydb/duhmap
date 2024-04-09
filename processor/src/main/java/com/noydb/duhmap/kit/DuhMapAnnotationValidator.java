@@ -32,7 +32,7 @@ import static com.noydb.duhmap.kit.DuhMapProcessorUtils.getMismatchingFieldsLog;
 public final class DuhMapAnnotationValidator {
 
     private static final String START_WARNING_LOG = String.format("duhmap:%s - WARNING", DUH_MAP_VERSION);
-    private static final String END_WARNING_LOG = "NOTE: having strict checks enabled would have caused this build to fail.\n";
+    private static final String END_WARNING_LOG = "NOTE: having DuhMapStrictRule.MISMATCHED_FIELD_TYPE set to true would have caused this build to fail.\n";
 
     private DuhMapAnnotationValidator() {
         // do not instantiate
@@ -195,7 +195,7 @@ public final class DuhMapAnnotationValidator {
                 handleFieldStrictFailure(
                         interfaceEl.getAnnotation(DuhMap.class),
                         String.format(
-                                "Field rules: %s failed for %s",
+                                "Field rules: %s failed for:\n %s",
                                 strictFails,
                                 getMismatchingFieldsLog(
                                         sourceFieldEls,

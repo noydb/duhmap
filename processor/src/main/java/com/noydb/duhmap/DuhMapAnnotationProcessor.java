@@ -38,7 +38,7 @@ import static com.noydb.duhmap.kit.DuhMapTemplates.getTemplate;
         "com.noydb.duhmap.annotation.DuhMapMethod"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-public final class DuhMapAnnotationProcessor extends AbstractProcessor {
+public class DuhMapAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(

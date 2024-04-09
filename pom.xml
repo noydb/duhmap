@@ -18,7 +18,7 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <duhmap.processor.version>0.7.0</duhmap.processor.version>
+        <duhmap.processor.version>0.7.0-k</duhmap.processor.version>
     </properties>
 
     <build>
